@@ -163,13 +163,17 @@ void Settings::setValue(const QString &key, const QJsonValue &value)
 QJsonValue Settings::value(const Key &key)
 {
     Q_D(Settings);
-    return d->settings.value(d->keyToString(key));
+    return value(d->keyToString(key));
 }
 
 QJsonValue Settings::value(const QString &key)
 {
     Q_D(Settings);
-    return d->settings.value(key);
+    // FIXME: Bug in QJsonObject
+    if (d->settings.contains(key))
+        return d->settings.value(key);
+    else
+        return QJsonValue();
 }
 
 const QString &Settings::appsDir() const
