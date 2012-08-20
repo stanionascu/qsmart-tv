@@ -10,3 +10,11 @@
 *.lai
 *.la
 *.a
+
+# Qt
+.moc
+.obj
+.rcc
+bin
+*.user*
+Makefile

@@ -1,0 +1,11 @@
+{
+    "Name": "Weather",
+    "Category": "",
+    "Author": "Stanislav Ionascu",
+    "Url": "",
+    "Requires": [],
+    "Features": [],
+    "Widget": "Mini.qml",
+    "Version": "1.0",
+    "Icon": ""
+}
