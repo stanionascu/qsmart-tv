@@ -47,6 +47,19 @@ public:
 
     void applySystemProxySettings()
     {
+#if defined(Q_OS_UNIX)
+        QUrl httpProxyUrl(getenv("http_proxy"));
+        QNetworkProxy httpProxy(QNetworkProxy::HttpProxy, httpProxyUrl.host(), httpProxyUrl.port(8080),
+                                httpProxyUrl.userName(), httpProxyUrl.password());
+        QNetworkProxy::setApplicationProxy(httpProxy);
+        qDebug() << "Detecting proxies:";
+        qDebug() << "HTTP:" << getenv("http_proxy");
+        qDebug() << "HTTPS:" << getenv("https_proxy");
+        qDebug() << "FTP:" << getenv("ftp_proxy");
+#else
+        qDebug() << "Windows Proxy Support Not Implemented!";
+#endif
+
     }
 
     void scanForApps()
