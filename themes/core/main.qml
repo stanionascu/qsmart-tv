@@ -34,24 +34,47 @@ Theme {
     }
 
     Keys.onReturnPressed: {
-        if (applicationsRepeater.itemAt(0).state === "MINI")
-            applicationsRepeater.itemAt(0).state = "FULL"
+        if (applicationsRepeater.itemAt(applicationsRepeater.selectedIndex).state === "MINI")
+            applicationsRepeater.itemAt(applicationsRepeater.selectedIndex).state = "FULL"
         else
-            applicationsRepeater.itemAt(0).state = "MINI"
+            applicationsRepeater.itemAt(applicationsRepeater.selectedIndex).state = "MINI"
+    }
+
+    Keys.onRightPressed: {
+        if (applicationsRepeater.selectedIndex < applications.count)
+            applicationsRepeater.selectedIndex ++
+    }
+
+    Keys.onLeftPressed: {
+        if (applicationsRepeater.selectedIndex > 0)
+            applicationsRepeater.selectedIndex --
     }
 
     Repeater {
         id: applicationsRepeater
+
+        property int selectedIndex: 0
+
+        anchors.fill: root
+
         model: applications
         Tile {
             text: name
-            anchors.centerIn: root
+            x: (index - applicationsRepeater.selectedIndex) * (width + 5) + (parent.width - width) / 2
+            y: (parent.height - height) / 2
             width: root.width * 0.4
             height: root.height * 0.4
             color: "blue"
+            iconSource: icon.length > 0 ? icon : ""
             widget: widgetComponent
             content: contentComponent
             state: "MINI"
-        }
+
+            opacity: index !== applicationsRepeater.selectedIndex ? 0.6 : 1.0
+            angle: index === applicationsRepeater.selectedIndex ? 0 : index < applicationsRepeater.selectedIndex ? -45 : 45
+            scale: index === applicationsRepeater.selectedIndex ? 1.0 : 0.9
+
+            Behavior on opacity { NumberAnimation { duration: 500 } }
+        }        
     }
 }

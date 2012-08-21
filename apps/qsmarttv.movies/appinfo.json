@@ -1,11 +1,11 @@
 {
-    "Name": "Weather",
-    "Category": "Utility",
+    "Name": "Movies",
+    "Category": "Movies",
     "Author": "Stanislav Ionascu",
     "Url": "",
     "Requires": [],
     "Features": [],
-    "Widget": "Mini.qml",
     "Version": "1.0",
-    "Icon": ""
+    "Icon": "movies.png"
 }
+

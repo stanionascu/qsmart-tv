@@ -122,7 +122,7 @@ QVariant ApplicationModel::data(const QModelIndex &index, int role) const
         else if (role == VersionRole)
             return d->applicationList[index.row()]->toVariantMap()["Version"];
         else if (role == IconRole)
-            return d->applicationList[index.row()]->toVariantMap()["Icon"];
+            return d->applicationList[index.row()]->icon();
         else if (role == WidgetComponentRole)
             return QVariant::fromValue(d->applicationList[index.row()]->widgetComponent());
         else if (role == ContentComponentRole)

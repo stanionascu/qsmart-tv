@@ -25,6 +25,8 @@ Rectangle {
     width: 100
     height: 62
 
+    focus: true
+
     color: "black"
 
     Text {

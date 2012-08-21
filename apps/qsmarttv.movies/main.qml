@@ -19,40 +19,19 @@
 **  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 ******************************************************************************/
 
-#ifndef APPLICATION_H
-#define APPLICATION_H
+import QtQuick 2.0
 
-#include <QObject>
+Rectangle {
+    width: 100
+    height: 62
 
-class QQmlComponent;
+    focus: true
 
-namespace SmartTV {
+    color: "red"
 
-class ApplicationPrivate;
-
-class Application : public QObject
-{
-    Q_OBJECT
-public:
-    explicit Application(const QString &identifier, QObject *parent = 0);
-    virtual ~Application();
-
-    const QString &id();
-    const QString &icon();
-    const QString &category();
-
-    QQmlComponent *contentComponent();
-    QQmlComponent *widgetComponent();
-
-    const QVariantMap &toVariantMap();
-
-private:
-    Q_DECLARE_PRIVATE(Application)
-    ApplicationPrivate *d_ptr;
-    
-};
-
-
+    Text {
+        color: "white"
+        text: "Movies - fullscreen"
+        font.pixelSize: parent.width / 10
+    }
 }
-
-#endif // APPLICATION_H

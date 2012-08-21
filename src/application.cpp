@@ -48,7 +48,7 @@ public:
 
     void prepareWidgetComponent()
     {
-        if (widgetComponent)
+        if (widgetComponent || widgetFileName.isEmpty())
             return;
 
         widgetComponent = new QQmlComponent(ThemeManager::instance()->view()->engine(),
@@ -74,6 +74,8 @@ public:
             appInfoMap = QJsonDocument::fromJson(appInfoFile.readAll()).object().toVariantMap();
             category = appInfoMap["Category"].toString();
             widgetFileName = appInfoMap["Widget"].toString();
+            if (!appInfoMap["Icon"].toString().isEmpty())
+                appIconPath = appFolder + QDir::separator() + appInfoMap["Icon"].toString();
         } else
             qFatal(("Could not load Application Info for:" + identifier).toLatin1());
 
@@ -89,6 +91,7 @@ private:
     QQmlComponent *contentComponent;
 
     QString appId;
+    QString appIconPath;
     QString category;
     QString widgetFileName;
     QString appFolder;
@@ -139,6 +142,12 @@ QQmlComponent *Application::widgetComponent()
     if (!d->widgetComponent)
         d->prepareWidgetComponent();
     return d->widgetComponent;
+}
+
+const QString &Application::icon()
+{
+    Q_D(Application);
+    return d->appIconPath;
 }
 
 }

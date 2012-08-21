@@ -29,6 +29,7 @@ Rectangle {
     property Component content
     property int angle: 0
     property alias text: text.text
+    property alias iconSource: icon.source
 
     smooth: true
     clip: false
@@ -50,6 +51,14 @@ Rectangle {
             font.pixelSize: root.width / 10
             style: Text.Sunken
             anchors.fill: parent
+        }
+
+        Image {
+            id: icon
+            fillMode: Image.PreserveAspectFit
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: parent.right
+            height: parent.height
         }
 
         Behavior on opacity { NumberAnimation { duration: 400 } }
@@ -75,21 +84,16 @@ Rectangle {
     }
 
     BusyIndicator {
-        visible: widgetLoader.status !== Loader.Ready && contentLoader.status !== Loader.Ready
+        visible: widgetLoader.status !== Loader.Ready && contentLoader.status !== Loader.Ready && icon.status !== Image.Ready
         anchors.centerIn: parent
     }
 
-    Behavior on width {
-        NumberAnimation { duration: 500 }
-    }
-
-    Behavior on height {
-        NumberAnimation { duration: 500 }
-    }
-
-    Behavior on angle {
-        NumberAnimation { duration: 700 }
-    }
+    Behavior on width { NumberAnimation { duration: 500 } }
+    Behavior on height { NumberAnimation { duration: 500 } }
+    Behavior on angle { NumberAnimation { duration: 700 } }
+    Behavior on x { NumberAnimation { duration: 400 }  }
+    Behavior on y { NumberAnimation { duration: 400 }  }
+    Behavior on scale { NumberAnimation { duration: 700 } }
 
     PropertyAnimation {
         id: widgetFadeOutAnimation
@@ -106,7 +110,6 @@ Rectangle {
                 target: root
                 width: root.parent.width * 0.4
                 height: root.parent.height * 0.4
-                angle: 0
             }
             PropertyChanges {
                 target: miniContent
@@ -122,6 +125,8 @@ Rectangle {
             name: "FULL"
             PropertyChanges {
                 target: root
+                x: 0
+                y: 0
                 width: root.parent.width
                 height: root.parent.height
                 angle: 180
