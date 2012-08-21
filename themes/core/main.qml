@@ -41,7 +41,7 @@ Theme {
     }
 
     Keys.onRightPressed: {
-        if (applicationsRepeater.selectedIndex < applications.count)
+        if (applicationsRepeater.selectedIndex < applications.count - 1)
             applicationsRepeater.selectedIndex ++
     }
 
