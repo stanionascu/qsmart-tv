@@ -49,6 +49,9 @@ public:
     {
 #if defined(Q_OS_UNIX)
         QUrl httpProxyUrl(getenv("http_proxy"));
+        if (httpProxyUrl.isEmpty())
+            return;
+
         QNetworkProxy httpProxy(QNetworkProxy::HttpProxy, httpProxyUrl.host(), httpProxyUrl.port(8080),
                                 httpProxyUrl.userName(), httpProxyUrl.password());
         QNetworkProxy::setApplicationProxy(httpProxy);
