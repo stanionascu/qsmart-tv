@@ -9,3 +9,7 @@ OTHER_FILES = main.qml \
     imports/Theme/Components/Window.qml
 
 QML_IMPORT_PATH = imports
+
+HEADERS +=
+
+SOURCES +=

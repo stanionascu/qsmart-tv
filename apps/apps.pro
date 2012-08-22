@@ -1,4 +1,5 @@
 TEMPLATE = subdirs
 
 SUBDIRS = qsmarttv.weather \
-    qsmarttv.movies
+    qsmarttv.movies \
+    qsmarttv.settings

@@ -43,6 +43,7 @@ public:
     ApplicationManagerPrivate() :
         q_ptr(nullptr)
     {
+        categories << "Movies" << "TV Shows" << "Utilities" << "Settings";
     }
 
     void applySystemProxySettings()
@@ -70,7 +71,7 @@ public:
         Q_Q(ApplicationManager);
         QDir appsDir(Settings::instance()->appsDir());
         foreach(const QString &entry, appsDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
-            if (checkAppValid(entry)) {
+            if (checkAppOrder(entry) != -1) {
                 Application *app = new Application(entry, q);
                 applications.append(app);
             } else {
@@ -79,25 +80,25 @@ public:
         }
     }
 
-    bool checkAppValid(const QString &app)
+    int checkAppOrder(const QString &app)
     {
         if (app == "imports")
-            return false;
+            return -1;
 
         QString appFolder = Settings::instance()->appsDir() + QDir::separator() + app;
         QString appInfoFilePath = appFolder + QDir::separator() + "appinfo.json";
         QFile appInfoFile(appInfoFilePath);
         if (!appInfoFile.open(QFile::ReadOnly))
-            return false;
+            return -1;
 
         QJsonObject appInfo = QJsonDocument::fromJson(appInfoFile.readAll()).object();
         QStringList requiredAppInfoKeys;
         requiredAppInfoKeys << "Name" << "Version" << "Category" << "Icon";
         foreach (const QString &key, requiredAppInfoKeys)
             if (!appInfo.keys().contains(key, Qt::CaseInsensitive))
-                return false;
+                return -1;
 
-        return true;
+        return categories.indexOf(appInfo["Category"].toString());
     }
 
 private:
@@ -105,6 +106,7 @@ private:
     ApplicationManager *q_ptr;
 
     ApplicationModel applications;
+    QStringList categories;
 
     static ApplicationManager *instance;
 };

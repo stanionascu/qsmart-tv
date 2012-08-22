@@ -16,7 +16,8 @@ SOURCES += \
     thememanager.cpp \
     theme.cpp \
     application.cpp \
-    applicationmodel.cpp
+    applicationmodel.cpp \
+    folderlistmodel.cpp
 
 RESOURCES +=
 
@@ -27,7 +28,8 @@ HEADERS += \
     thememanager.h \
     theme.h \
     application.h \
-    applicationmodel.h
+    applicationmodel.h \
+    folderlistmodel.h
 
 DEFINES += PREFIX  \
     APPS_PREFIX=\\\"..\\\" \

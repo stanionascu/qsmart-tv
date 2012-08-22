@@ -23,59 +23,16 @@ import QtQuick 2.0
 import Theme.Components 1.0
 
 Window {
-    id: root
     color: "black"
 
     Text {
-        id: title
         color: "white"
-        text: "Movies"
+        text: "Settings - fullscreen"
         font.pixelSize: parent.width / 10
     }
 
-    ListModel {
-        id: listModel
-        ListElement {
-            text: "Item 1"
-        }
-    }
-
-    ListView {
-        anchors.top: title.bottom
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
-
-        model: listModel
-
-        delegate: Rectangle {
-            Text {
-                text: model.text
-                color: "white"
-                font.pixelSize: root.width / 20
-            }
-        }
-    }
-
     Keys.onEscapePressed: {
-        console.log("Movies: quit")
+        console.log("Settings: quit")
         quit()
-    }
-
-    Keys.onReturnPressed: {
-        console.log("Movies: showWindow")
-        greenWindow.show()
-    }
-
-    Window {
-        id: greenWindow
-        color: "green"
-        opacity: 0.5
-        visible: false
-
-        Keys.onReturnPressed: {
-            console.log("Movies: hideWindow")
-            hide()
-        }
     }
 }
