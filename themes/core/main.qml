@@ -27,17 +27,14 @@ Theme {
 
     focus: true
 
-    Image { anchors.fill: parent; source: "images/videos.jpg"; fillMode: Image.PreserveAspectFit }
-
     Keys.onEscapePressed: {
         Qt.quit()
     }
 
     Keys.onReturnPressed: {
-        if (applicationsRepeater.itemAt(applicationsRepeater.selectedIndex).state === "MINI")
+        if (applicationsRepeater.itemAt(applicationsRepeater.selectedIndex).state === "MINI") {
             applicationsRepeater.itemAt(applicationsRepeater.selectedIndex).state = "FULL"
-        else
-            applicationsRepeater.itemAt(applicationsRepeater.selectedIndex).state = "MINI"
+        }
     }
 
     Keys.onRightPressed: {
@@ -49,6 +46,8 @@ Theme {
         if (applicationsRepeater.selectedIndex > 0)
             applicationsRepeater.selectedIndex --
     }
+
+    Image { anchors.fill: parent; source: "images/videos.jpg"; fillMode: Image.PreserveAspectFit }
 
     Repeater {
         id: applicationsRepeater
@@ -73,8 +72,9 @@ Theme {
             opacity: index !== applicationsRepeater.selectedIndex ? 0.6 : 1.0
             angle: index === applicationsRepeater.selectedIndex ? 0 : index < applicationsRepeater.selectedIndex ? -45 : 45
             scale: index === applicationsRepeater.selectedIndex ? 1.0 : 0.9
+            z: index === applicationsRepeater.selectedIndex ? 2 : 1
 
             Behavior on opacity { NumberAnimation { duration: 500 } }
-        }        
+        }
     }
 }

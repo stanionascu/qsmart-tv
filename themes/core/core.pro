@@ -6,5 +6,6 @@ OTHER_FILES = main.qml \
     imports/Theme/Components/qmldir \
     images/videos.jpg \
     imports/Theme/Components/images/busy.png \
+    imports/Theme/Components/Window.qml
 
 QML_IMPORT_PATH = imports

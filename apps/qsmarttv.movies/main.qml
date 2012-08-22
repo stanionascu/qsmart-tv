@@ -20,18 +20,36 @@
 ******************************************************************************/
 
 import QtQuick 2.0
+import Theme.Components 1.0
 
-Rectangle {
+Window {
     width: 100
     height: 62
-
-    focus: true
-
-    color: "red"
 
     Text {
         color: "white"
         text: "Movies - fullscreen"
         font.pixelSize: parent.width / 10
+    }
+
+    Keys.onEscapePressed: {
+        console.log("Movies: quit")
+        quit()
+    }
+
+    Keys.onLeftPressed: {
+        console.log("Movies: left")
+    }
+
+    Keys.onRightPressed: {
+        console.log("Movies: right")
+    }
+
+    Keys.onUpPressed: {
+        console.log("Movies: up")
+    }
+
+    Keys.onDownPressed: {
+        console.log("Movies: down")
     }
 }

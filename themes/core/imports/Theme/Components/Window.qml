@@ -20,40 +20,14 @@
 ******************************************************************************/
 
 import QtQuick 2.0
-import Theme.Components 1.0
 
-Window {
-    width: 100
-    height: 62
+Rectangle {
+    id: root
+
+    signal quit()
 
     focus: true
 
-    color: "black"
-
-    Text {
-        color: "white"
-        text: "Weather - fullscreen"
-        font.pixelSize: parent.width / 10
-    }
-
-    Keys.onEscapePressed: {
-        console.log("Weather: quit")
-        quit()
-    }
-
-    Keys.onLeftPressed: {
-        console.log("Weather: left")
-    }
-
-    Keys.onRightPressed: {
-        console.log("Weather: right")
-    }
-
-    Keys.onUpPressed: {
-        console.log("Weather: up")
-    }
-
-    Keys.onDownPressed: {
-        console.log("Weather: down")
-    }
+    width: 100
+    height: 62
 }

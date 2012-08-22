@@ -75,6 +75,18 @@ Rectangle {
             axis: Qt.vector3d(0, 1, 0)
         }
         Behavior on opacity { NumberAnimation { duration: 400 } }
+
+        Connections {
+            target: contentLoader.item
+            ignoreUnknownSignals: true
+            onQuit: {
+                root.state = "MINI"
+            }
+        }
+
+        onLoaded: {
+            contentLoader.item.forceActiveFocus()
+        }
     }
 
     transform: Rotation {
