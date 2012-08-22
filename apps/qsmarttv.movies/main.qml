@@ -23,8 +23,7 @@ import QtQuick 2.0
 import Theme.Components 1.0
 
 Window {
-    width: 100
-    height: 62
+    color: "black"
 
     Text {
         color: "white"
@@ -37,19 +36,20 @@ Window {
         quit()
     }
 
-    Keys.onLeftPressed: {
-        console.log("Movies: left")
+    Keys.onReturnPressed: {
+        console.log("Movies: showWindow")
+        greenWindow.show()
     }
 
-    Keys.onRightPressed: {
-        console.log("Movies: right")
-    }
+    Window {
+        id: greenWindow
+        color: "green"
+        opacity: 0.5
+        visible: false
 
-    Keys.onUpPressed: {
-        console.log("Movies: up")
-    }
-
-    Keys.onDownPressed: {
-        console.log("Movies: down")
+        Keys.onReturnPressed: {
+            console.log("Movies: hideWindow")
+            hide()
+        }
     }
 }

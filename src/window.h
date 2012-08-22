@@ -32,6 +32,8 @@ class Window : public QObject
 {
     Q_OBJECT
 
+    Q_PROPERTY(int width READ width NOTIFY widthChanged)
+    Q_PROPERTY(int height READ height NOTIFY heightChanged)
     Q_PROPERTY(bool fullScreen WRITE setFullScreen READ fullScreen NOTIFY fullScreenChanged)
 public:
     explicit Window(QObject *parent = 0);
@@ -39,10 +41,15 @@ public:
 
     void setFullScreen(bool value);
     bool fullScreen() const;
+
+    int width() const;
+    int height() const;
     
 signals:
     void quit();
     void fullScreenChanged();
+    void widthChanged();
+    void heightChanged();
     
 public slots:
     void show();

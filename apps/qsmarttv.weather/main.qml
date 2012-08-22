@@ -23,9 +23,6 @@ import QtQuick 2.0
 import Theme.Components 1.0
 
 Window {
-    width: 100
-    height: 62
-
     focus: true
 
     color: "black"
@@ -39,21 +36,5 @@ Window {
     Keys.onEscapePressed: {
         console.log("Weather: quit")
         quit()
-    }
-
-    Keys.onLeftPressed: {
-        console.log("Weather: left")
-    }
-
-    Keys.onRightPressed: {
-        console.log("Weather: right")
-    }
-
-    Keys.onUpPressed: {
-        console.log("Weather: up")
-    }
-
-    Keys.onDownPressed: {
-        console.log("Weather: down")
     }
 }

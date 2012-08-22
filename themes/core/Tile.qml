@@ -83,10 +83,6 @@ Rectangle {
                 root.state = "MINI"
             }
         }
-
-        onLoaded: {
-            contentLoader.item.forceActiveFocus()
-        }
     }
 
     transform: Rotation {
@@ -103,8 +99,8 @@ Rectangle {
     Behavior on width { NumberAnimation { duration: 500 } }
     Behavior on height { NumberAnimation { duration: 500 } }
     Behavior on angle { NumberAnimation { duration: 700 } }
-    Behavior on x { NumberAnimation { duration: 400 }  }
-    Behavior on y { NumberAnimation { duration: 400 }  }
+    Behavior on x { NumberAnimation { duration: 400 } }
+    Behavior on y { NumberAnimation { duration: 400 } }
     Behavior on scale { NumberAnimation { duration: 700 } }
 
     PropertyAnimation {
@@ -137,8 +133,6 @@ Rectangle {
             name: "FULL"
             PropertyChanges {
                 target: root
-                x: 0
-                y: 0
                 width: root.parent.width
                 height: root.parent.height
                 angle: 180

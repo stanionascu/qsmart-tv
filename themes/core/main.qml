@@ -25,6 +25,8 @@ import SmartTV 1.0
 Theme {
     id: root
 
+    property int activeIndex: -1
+    property int selectedIndex: 0
     focus: true
 
     Keys.onEscapePressed: {
@@ -32,19 +34,19 @@ Theme {
     }
 
     Keys.onReturnPressed: {
-        if (applicationsRepeater.itemAt(applicationsRepeater.selectedIndex).state === "MINI") {
-            applicationsRepeater.itemAt(applicationsRepeater.selectedIndex).state = "FULL"
+        if (applicationsRepeater.itemAt(selectedIndex).state === "MINI") {
+            applicationsRepeater.itemAt(selectedIndex).state = "FULL"
         }
     }
 
     Keys.onRightPressed: {
-        if (applicationsRepeater.selectedIndex < applications.count - 1)
-            applicationsRepeater.selectedIndex ++
+        if (selectedIndex < applications.count - 1)
+            selectedIndex ++
     }
 
     Keys.onLeftPressed: {
-        if (applicationsRepeater.selectedIndex > 0)
-            applicationsRepeater.selectedIndex --
+        if (selectedIndex > 0)
+            selectedIndex --
     }
 
     Image { anchors.fill: parent; source: "images/videos.jpg"; fillMode: Image.PreserveAspectFit }
@@ -52,15 +54,13 @@ Theme {
     Repeater {
         id: applicationsRepeater
 
-        property int selectedIndex: 0
-
-        anchors.fill: root
+        anchors.fill: parent
 
         model: applications
         Tile {
             text: name
-            x: (index - applicationsRepeater.selectedIndex) * (width + 5) + (parent.width - width) / 2
-            y: (parent.height - height) / 2
+            x: state === "FULL" ? 0 : (index - selectedIndex) * (root.width * 0.4 + 5) + root.width * 0.6 / 2
+            y: state === "FULL" ? 0 : root.height * 0.6 / 2
             width: root.width * 0.4
             height: root.height * 0.4
             color: "blue"
@@ -69,12 +69,18 @@ Theme {
             content: contentComponent
             state: "MINI"
 
-            opacity: index !== applicationsRepeater.selectedIndex ? 0.6 : 1.0
-            angle: index === applicationsRepeater.selectedIndex ? 0 : index < applicationsRepeater.selectedIndex ? -45 : 45
-            scale: index === applicationsRepeater.selectedIndex ? 1.0 : 0.9
-            z: index === applicationsRepeater.selectedIndex ? 2 : 1
+            opacity: index !== selectedIndex ? activeIndex === -1 ? 0.6 : 0.0 : 1.0
+            angle: index === selectedIndex ? 0 : index < selectedIndex ? -45 : 45
+            scale: index === selectedIndex ? 1.0 : 0.9
+            z: index === selectedIndex ? 2 : 1
 
             Behavior on opacity { NumberAnimation { duration: 500 } }
-        }
+            onStateChanged: {
+                if (state === "FULL")
+                    activeIndex = index
+                else if (state === "MINI" && activeIndex === index)
+                    activeIndex = -1
+            }
+        }        
     }
 }

@@ -72,6 +72,8 @@ public:
         view->setWindowTitle("QSmartTV");
 
         q->connect(view->engine(), SIGNAL(quit()), QApplication::instance(), SLOT(quit()));
+        q->connect(view, SIGNAL(widthChanged(int)), q, SIGNAL(widthChanged()));
+        q->connect(view, SIGNAL(heightChanged(int)), q, SIGNAL(heightChanged()));
     }
 
     void registerTypes()
@@ -135,6 +137,18 @@ void Window::setFullScreen(bool value)
 bool Window::fullScreen() const
 {
     return Settings::instance()->value(Settings::KeyFullScreen).toBool(true);
+}
+
+int Window::width() const
+{
+    Q_D(const Window);
+    return d->view->width();
+}
+
+int Window::height() const
+{
+    Q_D(const Window);
+    return d->view->height();
 }
 
 void Window::show()

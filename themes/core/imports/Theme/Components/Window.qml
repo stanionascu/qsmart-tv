@@ -28,6 +28,34 @@ Rectangle {
 
     focus: true
 
-    width: 100
-    height: 62
+    anchors.fill: parent
+
+    Keys.onPressed: {
+        event.accepted = true
+    }
+
+    Component.onCompleted: {
+        if (visible)
+            show()
+        else
+            hide()
+    }
+
+    onVisibleChanged: {
+        if (visible)
+            show()
+        else
+            hide()
+    }
+
+    function show() {
+        visible = true
+        root.forceActiveFocus()
+    }
+
+    function hide() {
+        visible = false
+        if (parent)
+            parent.forceActiveFocus()
+    }
 }
