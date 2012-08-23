@@ -1,2 +1,4 @@
 BusyIndicator 1.0 BusyIndicator.qml
+ProgressIndicator 1.0 ProgressIndicator.qml
 Window 1.0 Window.qml
+VideoPlayer 1.0 VideoPlayer.qml
