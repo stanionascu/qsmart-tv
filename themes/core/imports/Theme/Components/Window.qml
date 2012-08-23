@@ -24,6 +24,7 @@ import QtQuick 2.0
 Rectangle {
     id: root
 
+    property Item defaultFocusItem: null
     signal quit()
 
     focus: true
@@ -50,7 +51,10 @@ Rectangle {
 
     function show() {
         visible = true
-        root.forceActiveFocus()
+        if (defaultFocusItem === null)
+            root.forceActiveFocus()
+        else
+            defaultFocusItem.forceActiveFocus()
     }
 
     function hide() {
