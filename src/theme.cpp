@@ -21,6 +21,8 @@
 
 #include "theme.h"
 
+#include <QQmlEngine>
+
 #include "applicationmanager.h"
 
 namespace SmartTV {

@@ -21,10 +21,12 @@
 
 import QtQuick 2.0
 import Theme.Components 1.0
+import SmartTV 1.0
 
 Rectangle {
     id: root
 
+    property string appId
     property Component widget
     property Component content
     property int angle: 0
@@ -38,10 +40,11 @@ Rectangle {
         id: miniContent
         anchors.fill: root
         opacity: 0.0
-        Loader {
+        ApplicationLoader {
             id: widgetLoader
             anchors.fill: parent
-            asynchronous: true
+            applicationId: identifier
+            //asynchronous: true
         }
 
         Text {
@@ -64,10 +67,11 @@ Rectangle {
         Behavior on opacity { NumberAnimation { duration: 400 } }
     }
 
-    Loader {
+    ApplicationLoader {
         id: contentLoader
+        applicationId: appId
         anchors.fill: root
-        asynchronous: true
+        //asynchronous: true
         opacity: 0.0
         transform: Rotation {
             angle: 180
@@ -80,6 +84,7 @@ Rectangle {
             target: contentLoader.item
             ignoreUnknownSignals: true
             onQuit: {
+                console.log("Content - Quit!")
                 root.state = "MINI"
             }
         }

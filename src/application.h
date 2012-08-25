@@ -24,6 +24,7 @@
 
 #include <QObject>
 
+class QQmlContext;
 class QQmlComponent;
 
 namespace SmartTV {
@@ -43,6 +44,7 @@ public:
 
     QQmlComponent *contentComponent();
     QQmlComponent *widgetComponent();
+    QQmlContext *context();
 
     const QVariantMap &toVariantMap();
 

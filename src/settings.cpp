@@ -124,6 +124,7 @@ private:
     QString themesFolder;
 
     QString themeName;
+    QHash<QString, QString> appsFolderById;
 
     static Settings *instance;
 };
@@ -180,6 +181,12 @@ const QString &Settings::appsDir() const
 {
     Q_D(const Settings);
     return d->appsFolder;
+}
+
+const QString &Settings::configDir() const
+{
+    Q_D(const Settings);
+    return d->configFolder;
 }
 
 const QString &Settings::themesDir() const

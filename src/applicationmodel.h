@@ -42,7 +42,8 @@ public:
         VersionRole,
         IconRole,
         WidgetComponentRole,
-        ContentComponentRole
+        ContentComponentRole,
+        ContextRole
     };
 
     ApplicationModel(QObject *parent = 0);
@@ -57,6 +58,8 @@ public:
     QVariant data(const QModelIndex &index, int role) const;
 
     int count() { return rowCount(QModelIndex()); }
+    Application *byId(const QString &id);
+    bool contains(const QString &id);
 
 signals:
     void rowCountChanged();

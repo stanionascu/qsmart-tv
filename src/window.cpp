@@ -82,6 +82,8 @@ public:
         view->engine()->addImportPath(Settings::instance()->themesDir() + QDir::separator() + Settings::instance()->themeName() +
                                       QDir::separator() + "imports");
 
+        view->engine()->rootContext()->setContextProperty("context_AppId", "global");
+
         qDebug() << view->engine()->importPathList();
 
         ApplicationManager::instance()->registerTypes();

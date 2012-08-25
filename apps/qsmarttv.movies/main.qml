@@ -78,4 +78,8 @@ Window {
             hide()
         }
     }
+
+    Component.onCompleted: {
+        console.log("context_AppId:", context_AppId)
+    }
 }

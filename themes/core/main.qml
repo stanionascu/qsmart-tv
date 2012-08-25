@@ -58,6 +58,8 @@ Theme {
 
         model: applications
         Tile {
+            id: tile
+            appId: identifier
             text: name
             x: state === "FULL" ? 0 : (index - selectedIndex) * (root.width * 0.4 + 5) + root.width * 0.6 / 2
             y: state === "FULL" ? 0 : root.height * 0.6 / 2
@@ -81,6 +83,6 @@ Theme {
                 else if (state === "MINI" && activeIndex === index)
                     activeIndex = -1
             }
-        }        
+        }
     }
 }

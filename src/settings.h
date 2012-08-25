@@ -48,6 +48,7 @@ public:
     QJsonValue value(const QString &key);
 
     const QString &appsDir() const;
+    const QString &configDir() const;
     const QString &themesDir() const;
 
     const QString &themeName() const;

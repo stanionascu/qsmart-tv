@@ -23,6 +23,7 @@
 
 #include <QModelIndex>
 #include <QQmlComponent>
+#include <QQmlContext>
 
 #include "application.h"
 
@@ -46,6 +47,7 @@ private:
     ApplicationModel *q_ptr;
 
     QList<Application*> applicationList;
+    QHash<QString, int> applicationById;
 };
 
 ApplicationModel::ApplicationModel(QObject *parent) :
@@ -60,6 +62,7 @@ ApplicationModel::ApplicationModel(QObject *parent) :
     roles[IconRole] = "icon";
     roles[WidgetComponentRole] = "widgetComponent";
     roles[ContentComponentRole] = "contentComponent";
+    roles[ContextRole] = "context";
     setRoleNames(roles);
 
     connect(this, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SIGNAL(rowCountChanged()));
@@ -76,6 +79,7 @@ void ApplicationModel::append(Application *app)
     Q_D(ApplicationModel);
     beginInsertRows(QModelIndex(), d->applicationList.count(), d->applicationList.count());
     d->applicationList.append(app);
+    d->applicationById[app->id()] = d->applicationList.count() - 1;
     endInsertRows();
 }
 
@@ -127,8 +131,24 @@ QVariant ApplicationModel::data(const QModelIndex &index, int role) const
             return QVariant::fromValue(d->applicationList[index.row()]->widgetComponent());
         else if (role == ContentComponentRole)
             return QVariant::fromValue(d->applicationList[index.row()]->contentComponent());
+        else if (role == ContextRole)
+            return QVariant::fromValue(d->applicationList[index.row()]->context());
     }
     return QVariant();
+}
+
+Application *ApplicationModel::byId(const QString &id)
+{
+    Q_D(ApplicationModel);
+    if (!d->applicationById.contains(id))
+        return nullptr;
+    return d->applicationList[d->applicationById[id]];
+}
+
+bool ApplicationModel::contains(const QString &id)
+{
+    Q_D(ApplicationModel);
+    return d->applicationById.contains(id);
 }
 
 }

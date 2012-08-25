@@ -25,14 +25,12 @@ import Theme.Components 1.0
 Rectangle {
     id: root
 
-    width: 100
-    height: 62
     color: "green"
 
     Image {
         id: weatherIcon
         anchors.fill: root
-        source: "http://cdn1.iconfinder.com/data/icons/iconsland-weather/PNG/256x256/Sunny.png"
+        source: "images/sunny.png"
         fillMode: Image.PreserveAspectFit
         asynchronous: true
     }

@@ -31,6 +31,7 @@
 #include <QQmlComponent>
 #include <QQuickView>
 
+#include "window.h"
 #include "settings.h"
 #include "thememanager.h"
 
@@ -44,6 +45,15 @@ public:
         widgetComponent(nullptr), contentComponent(nullptr)
     {
 
+    }
+
+    void prepareContext()
+    {
+        Q_Q(Application);
+        if (context)
+            return;
+
+        context = new QQmlContext(ThemeManager::instance()->view()->engine(), q);
     }
 
     void prepareWidgetComponent()
@@ -79,6 +89,7 @@ public:
         } else
             qFatal(("Could not load Application Info for:" + identifier).toLatin1());
 
+        context->setContextProperty("context_AppId", identifier);
         qDebug() << identifier << appInfoMap;
     }
 
@@ -102,6 +113,7 @@ Application::Application(const QString &identifier, QObject *parent) :
     QObject(parent), d_ptr(new ApplicationPrivate)
 {
     d_ptr->q_ptr = this;
+    d_ptr->prepareContext();
     d_ptr->load(identifier);
 }
 
@@ -148,6 +160,12 @@ const QString &Application::icon()
 {
     Q_D(Application);
     return d->appIconPath;
+}
+
+QQmlContext *Application::context()
+{
+    Q_D(Application);
+    return d->context;
 }
 
 }
