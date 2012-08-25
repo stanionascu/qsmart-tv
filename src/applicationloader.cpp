@@ -37,6 +37,7 @@ public:
         component = newComponent;
         if (newComponent)
             q->connect(component, SIGNAL(statusChanged(QQmlComponent::Status)), q, SLOT(_q_prepareItem(QQmlComponent::Status)));
+        emit q->statusChanged();
     }
 
     void _q_createItem()
@@ -60,6 +61,7 @@ public:
             item->forceActiveFocus();
             _q_updateItem();
             emit q->loaded();
+            emit q->statusChanged();
         }
     }
 
@@ -139,6 +141,17 @@ QQuickItem *ApplicationLoader::item()
 {
     Q_D(ApplicationLoader);
     return d->item;
+}
+
+QQmlComponent::Status ApplicationLoader::status()
+{
+    Q_D(ApplicationLoader);
+    if (!d->component)
+        return QQmlComponent::Null;
+    else if (d->component && !d->item)
+        return QQmlComponent::Loading;
+    else
+        return QQmlComponent::Ready;
 }
 
 }

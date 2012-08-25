@@ -15,6 +15,7 @@ class ApplicationLoader : public QQuickItem
     Q_PROPERTY(QQuickItem *item READ item NOTIFY itemChanged)
     Q_PROPERTY(const QString &applicationId READ applicationId WRITE setApplicationId NOTIFY applicationIdChanged)
     Q_PROPERTY(QQmlComponent *sourceComponent READ sourceComponent WRITE setSourceComponent NOTIFY sourceComponentChanged)
+    Q_PROPERTY(int status READ status NOTIFY statusChanged)
 
 public:
     explicit ApplicationLoader(QQuickItem *parent = 0);
@@ -27,12 +28,14 @@ public:
     void setSourceComponent(QQmlComponent *component);
 
     QQuickItem *item();
+    QQmlComponent::Status status();
     
 signals:
     void applicationIdChanged();
     void sourceComponentChanged();
     void itemChanged();
     void loaded();
+    void statusChanged();
     
 private:
     Q_PRIVATE_SLOT(d_func(), void _q_createItem())
