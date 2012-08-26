@@ -38,7 +38,6 @@ Window {
 
     FolderListModel {
         id: listModel
-        path: "/home"
         filter: ["mov", "mp4", "mkv", "avi"]
 
         onPathChanged: {

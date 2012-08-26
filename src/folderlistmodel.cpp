@@ -22,6 +22,7 @@
 #include "folderlistmodel.h"
 
 #include <QDir>
+#include <QStandardPaths>
 #include <QDebug>
 
 namespace SmartTV {
@@ -32,7 +33,7 @@ public:
     FolderListModelPrivate() :
         q_ptr(nullptr)
     {
-        absolutePath = QDir(".").absolutePath();
+        absolutePath = QStandardPaths::writableLocation(QStandardPaths::MoviesLocation);
         showDotDot = true;
     }
 
