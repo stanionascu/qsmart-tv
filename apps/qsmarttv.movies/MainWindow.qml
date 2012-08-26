@@ -39,6 +39,7 @@ Window {
     FolderListModel {
         id: listModel
         path: "/home"
+        filter: ["mov", "mp4", "mkv", "avi"]
 
         onPathChanged: {
             list.currentIndex = 0
@@ -79,6 +80,10 @@ Window {
             Keys.onReturnPressed: {
                 if (model.isDir)
                     listModel.path = model.path
+                else {
+                    windowStack.push(playbackWindowComponent)
+                    windowStack.currentWindow.source = model.path
+                }
             }
         }
 
@@ -112,6 +117,14 @@ Window {
             Keys.onTabPressed: {
                 windowStack.pop()
             }
+        }
+    }
+
+    Component {
+        id: playbackWindowComponent
+        PlaybackWindow {
+            anchors.fill: parent
+            color: "black"
         }
     }
 }

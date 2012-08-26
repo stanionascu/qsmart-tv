@@ -20,31 +20,20 @@
 ******************************************************************************/
 
 import QtQuick 2.0
-import QtMultimedia 5.0
 import Theme.Components 1.0
 
-Rectangle {
+Window {
     id: root
 
-    property bool showControls: true
-    property alias source: video.source
+    property alias source: player.source
 
-    Video {
-        id: video
-        anchors.fill: parent
-        autoPlay: true
+    VideoPlayer {
+        id: player
+        anchors.fill: root
+        color: root.color
     }
 
-    ProgressIndicator {
-        id: slider
-        value: video.position
-        maximum: video.duration
-        height: root.height / 20
-        anchors.left: root.left
-        anchors.right: root.right
-        anchors.bottom: root.bottom
-        opacity: showControls ? 1.0 : 0.0
-
-        Behavior on opacity { NumberAnimation { duration: 400 } }
+    Keys.onReturnPressed: {
+        player.showControls = !player.showControls
     }
 }
