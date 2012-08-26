@@ -21,45 +21,23 @@
 
 import QtQuick 2.0
 
-Rectangle {
+FocusScope {
     id: root
 
+    property alias color: background.color
     property Item defaultFocusItem: null
     signal quit()
 
-    focus: true
+    focus: visible
 
     anchors.fill: parent
 
+    Rectangle {
+        id: background
+        anchors.fill: parent
+    }
+
     Keys.onPressed: {
         event.accepted = true
-    }
-
-    Component.onCompleted: {
-        if (visible)
-            show()
-        else
-            hide()
-    }
-
-    onVisibleChanged: {
-        if (visible)
-            show()
-        else
-            hide()
-    }
-
-    function show() {
-        visible = true
-        if (defaultFocusItem === null)
-            root.forceActiveFocus()
-        else
-            defaultFocusItem.forceActiveFocus()
-    }
-
-    function hide() {
-        visible = false
-        if (parent)
-            parent.forceActiveFocus()
     }
 }
