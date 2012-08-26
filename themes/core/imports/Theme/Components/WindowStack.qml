@@ -40,4 +40,41 @@ Item {
         Stack.pop()
         depth = Stack.windowStack.length
     }
+
+    Component {
+        id: pushAnimationComponent
+        ParallelAnimation {
+            id: animation
+
+            property Item window: null
+
+            NumberAnimation { target: window; properties: "opacity"; from: 0.0; to: 1.0; duration: 400 }
+
+            onRunningChanged: {
+                if (!running)
+                    animation.destroy()
+            }
+        }
+    }
+
+    Component {
+        id: popAnimationComponent
+        ParallelAnimation {
+            id: animation
+
+            property Item window: null
+
+            NumberAnimation { target: window; properties: "opacity"; from: 1.0; to: 0.0; duration: 400 }
+
+            onRunningChanged: {
+                if (!running)
+                    animation.destroy()
+            }
+
+            Component.onDestruction: {
+                if (window)
+                    window.destroy()
+            }
+        }
+    }
 }
