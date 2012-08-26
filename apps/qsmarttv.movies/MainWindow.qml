@@ -57,7 +57,7 @@ Window {
         model: listModel
         highlight: Component {
             Rectangle {
-                height: 60
+                height: root.height / 10
                 width: root.width
                 color: "white"
                 opacity: 0.5
@@ -65,7 +65,7 @@ Window {
         }
 
         delegate: FocusScope {
-            height: 60
+            height: root.height / 10
             focus: true
             width: parent.width
             Text {
