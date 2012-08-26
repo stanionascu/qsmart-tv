@@ -21,10 +21,13 @@
 
 import QtQuick 2.0
 import Theme.Components 1.0
+import SmartTV 1.0
 
 Window {
     id: root
     color: "black"
+
+    focus: true
 
     Text {
         id: title
@@ -33,28 +36,54 @@ Window {
         font.pixelSize: parent.width / 10
     }
 
-    ListModel {
+    FolderListModel {
         id: listModel
-        ListElement {
-            text: "Item 1"
+        path: "/home"
+
+        onPathChanged: {
+            list.currentIndex = 0
         }
     }
 
     ListView {
+        id: list
+        focus: true
+        currentIndex: 0
         anchors.top: title.bottom
-        anchors.bottom: parent.bottom
         anchors.left: parent.left
+        anchors.bottom: parent.bottom
         anchors.right: parent.right
 
         model: listModel
+        highlight: Component {
+            Rectangle {
+                height: 60
+                width: root.width
+                color: "white"
+                opacity: 0.5
+            }
+        }
 
-        delegate: Rectangle {
+        delegate: FocusScope {
+            height: 60
+            focus: true
+            width: parent.width
             Text {
-                text: model.text
+                focus: true
+                anchors.verticalCenter: parent.verticalCenter
+                text: model.name
                 color: "white"
                 font.pixelSize: root.width / 20
             }
+
+            Keys.onReturnPressed: {
+                if (model.isDir)
+                    listModel.path = model.path
+            }
         }
+
+        Keys.onDownPressed: list.incrementCurrentIndex()
+        Keys.onUpPressed: list.decrementCurrentIndex()
     }
 
     Keys.onEscapePressed: {
@@ -62,24 +91,30 @@ Window {
         quit()
     }
 
-    Keys.onReturnPressed: {
-        console.log("Movies: showWindow")
-        greenWindow.show()
-    }
-
-    Window {
-        id: greenWindow
-        color: "green"
-        opacity: 0.5
-        visible: false
-
-        Keys.onReturnPressed: {
-            console.log("Movies: hideWindow")
-            hide()
-        }
+    Keys.onTabPressed: {
+        secondaryWindow.visible = true
     }
 
     Component.onCompleted: {
         console.log("context_AppId:", context_AppId)
+    }
+
+    Window {
+        id: secondaryWindow
+        visible: false
+        anchors.fill: root
+        color: "green"
+        opacity: 0.5
+        focus: visible
+
+        Keys.onPressed: {
+            console.log("secondaryWindow = keyPress")
+        }
+
+        Keys.onTabPressed: {
+            visible = false
+            focus = false
+            list.focus = true
+        }
     }
 }
