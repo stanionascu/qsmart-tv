@@ -20,20 +20,24 @@
 ******************************************************************************/
 
 import QtQuick 2.0
+import "WindowStack.js" as Stack
 
-FocusScope {
+Item {
     id: root
 
-    property WindowStack windowStack: null
-    property alias color: background.color
+    property int depth: 0
+    property Item currentWindow: null
 
-    focus: true
-    visible: false
+    width: parent ? parent.width : 0
+    height: parent ? parent.height : 0
 
-    anchors.fill: parent
+    function push(window) {
+        Stack.push(window)
+        depth = Stack.windowStack.length
+    }
 
-    Rectangle {
-        id: background
-        anchors.fill: parent
+    function pop() {
+        Stack.pop()
+        depth = Stack.windowStack.length
     }
 }

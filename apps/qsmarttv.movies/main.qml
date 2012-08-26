@@ -21,100 +21,21 @@
 
 import QtQuick 2.0
 import Theme.Components 1.0
-import SmartTV 1.0
 
-Window {
-    id: root
-    color: "black"
+SmartApplication {
+    initialWindow: mainComponent
 
-    focus: true
+    Component {
+        id: mainComponent
+        MainWindow {
 
-    Text {
-        id: title
-        color: "white"
-        text: "Movies"
-        font.pixelSize: parent.width / 10
-    }
-
-    FolderListModel {
-        id: listModel
-        path: "/home"
-
-        onPathChanged: {
-            list.currentIndex = 0
         }
-    }
-
-    ListView {
-        id: list
-        focus: true
-        currentIndex: 0
-        anchors.top: title.bottom
-        anchors.left: parent.left
-        anchors.bottom: parent.bottom
-        anchors.right: parent.right
-
-        model: listModel
-        highlight: Component {
-            Rectangle {
-                height: 60
-                width: root.width
-                color: "white"
-                opacity: 0.5
-            }
-        }
-
-        delegate: FocusScope {
-            height: 60
-            focus: true
-            width: parent.width
-            Text {
-                focus: true
-                anchors.verticalCenter: parent.verticalCenter
-                text: model.name
-                color: "white"
-                font.pixelSize: root.width / 20
-            }
-
-            Keys.onReturnPressed: {
-                if (model.isDir)
-                    listModel.path = model.path
-            }
-        }
-
-        Keys.onDownPressed: list.incrementCurrentIndex()
-        Keys.onUpPressed: list.decrementCurrentIndex()
     }
 
     Keys.onEscapePressed: {
-        console.log("Movies: quit")
-        quit()
-    }
-
-    Keys.onTabPressed: {
-        secondaryWindow.visible = true
-    }
-
-    Component.onCompleted: {
-        console.log("context_AppId:", context_AppId)
-    }
-
-    Window {
-        id: secondaryWindow
-        visible: false
-        anchors.fill: root
-        color: "green"
-        opacity: 0.5
-        focus: visible
-
-        Keys.onPressed: {
-            console.log("secondaryWindow = keyPress")
-        }
-
-        Keys.onTabPressed: {
-            visible = false
-            focus = false
-            list.focus = true
-        }
+        if (windowStack.depth > 1)
+            windowStack.pop()
+        else
+            quit()
     }
 }

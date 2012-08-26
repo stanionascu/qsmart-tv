@@ -19,21 +19,47 @@
 **  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 ******************************************************************************/
 
-import QtQuick 2.0
+var windowStack = []
 
-FocusScope {
-    id: root
+function depth() {
+    return windowStack.length;
+}
 
-    property WindowStack windowStack: null
-    property alias color: background.color
+function push(window) {
+    if (typeof window === "object") {
+        var item = null
+        if (window.createObject !== undefined) {
+            item = init(window)
+        } else
+            item = window
+        windowStack.push(item)
 
-    focus: true
-    visible: false
-
-    anchors.fill: parent
-
-    Rectangle {
-        id: background
-        anchors.fill: parent
+        item.windowStack = root
+        item.visible = true
+        item.focus = true
+        root.currentWindow = item
     }
+}
+
+function pop() {
+    if (depth() === 0)
+        return;
+
+    var item = windowStack.pop();
+    item.destroy()
+    if (depth() !== 0) {
+        item = windowStack[depth() - 1];
+        focusOn(item)
+        root.currentWindow = item
+    } else {
+        focusOn(root.parent)
+    }
+}
+
+function init(component) {
+    return component.createObject(root)
+}
+
+function focusOn(item) {
+    item.focus = true
 }

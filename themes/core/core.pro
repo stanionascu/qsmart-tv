@@ -8,7 +8,10 @@ OTHER_FILES = main.qml \
     imports/Theme/Components/images/busy.png \
     imports/Theme/Components/Window.qml \
     imports/Theme/Components/VideoPlayer.qml \
-    imports/Theme/Components/ProgressIndicator.qml
+    imports/Theme/Components/ProgressIndicator.qml \
+    imports/Theme/Components/WindowStack.qml \
+    imports/Theme/Components/WindowStack.js \
+    imports/Theme/Components/SmartApplication.qml
 
 QML_IMPORT_PATH = imports
 

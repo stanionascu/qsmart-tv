@@ -20,20 +20,28 @@
 ******************************************************************************/
 
 import QtQuick 2.0
+import Theme.Components 1.0
 
 FocusScope {
     id: root
 
-    property WindowStack windowStack: null
-    property alias color: background.color
-
     focus: true
-    visible: false
-
     anchors.fill: parent
 
-    Rectangle {
-        id: background
-        anchors.fill: parent
+    property Component initialWindow: null
+    property WindowStack windowStack: WindowStack { parent: root }
+
+    signal quit()
+
+    Component.onCompleted: {
+        init()
+    }
+
+    Keys.onPressed: {
+        event.accepted = true
+    }
+
+    function init() {
+        windowStack.push(initialWindow)
     }
 }

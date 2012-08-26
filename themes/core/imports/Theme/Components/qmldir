@@ -1,4 +1,6 @@
 BusyIndicator 1.0 BusyIndicator.qml
 ProgressIndicator 1.0 ProgressIndicator.qml
+SmartApplication 1.0 SmartApplication.qml
 Window 1.0 Window.qml
+WindowStack 1.0 WindowStack.qml
 VideoPlayer 1.0 VideoPlayer.qml
