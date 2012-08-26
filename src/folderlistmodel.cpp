@@ -45,9 +45,12 @@ public:
         Q_Q(FolderListModel);
         q->beginResetModel();
         files = QDir(absolutePath).entryInfoList((showDotDot ? QDir::NoDot : QDir::NoDotAndDotDot) | QDir::AllEntries, QDir::Name);
-        q->endResetModel();
+        foreach(QFileInfo file, files) {
+            if (file.isFile() && !filter.contains(file.suffix(), Qt::CaseInsensitive))
+                files.removeOne(file);
+        }
 
-        qDebug() << Q_FUNC_INFO << files.count() << absolutePath;
+        q->endResetModel();
     }
 
 private:
@@ -58,6 +61,7 @@ private:
 
     QString absolutePath;
     bool showDotDot;
+    QStringList filter;
 };
 
 FolderListModel::FolderListModel(QObject *parent) :
@@ -73,6 +77,7 @@ FolderListModel::FolderListModel(QObject *parent) :
 
     connect(this, SIGNAL(pathChanged()), this, SLOT(_q_buildList()));
     connect(this, SIGNAL(showDotDotChanged()), this, SLOT(_q_buildList()));
+    connect(this, SIGNAL(filterChanged()), this, SLOT(_q_buildList()));
 
     d_ptr->_q_buildList();
 }
@@ -110,6 +115,21 @@ void FolderListModel::setShowDotDot(bool show)
     if (d->showDotDot != show) {
         d->showDotDot = show;
         emit showDotDotChanged();
+    }
+}
+
+const QStringList &FolderListModel::filter()
+{
+    Q_D(FolderListModel);
+    return d->filter;
+}
+
+void FolderListModel::setFilter(const QStringList &filter)
+{
+    Q_D(FolderListModel);
+    if (d->filter != filter) {
+        d->filter = filter;
+        emit filterChanged();
     }
 }
 

@@ -23,6 +23,7 @@
 #define FOLDERLISTMODEL_H
 
 #include <QAbstractItemModel>
+#include <QFileSystemModel>
 
 namespace SmartTV {
 
@@ -33,6 +34,7 @@ class FolderListModel : public QAbstractListModel
     Q_OBJECT
     Q_PROPERTY(QString path READ path WRITE setPath NOTIFY pathChanged)
     Q_PROPERTY(bool showDotDot READ showDotDot WRITE setShowDotDot NOTIFY showDotDotChanged)
+    Q_PROPERTY(QStringList filter READ filter WRITE setFilter NOTIFY filterChanged)
 
 public:
     enum FolderFileRoles {
@@ -51,12 +53,16 @@ public:
     bool showDotDot();
     void setShowDotDot(bool show);
 
+    const QStringList &filter();
+    void setFilter(const QStringList &filter);
+
     virtual int rowCount(const QModelIndex &parent) const;
     virtual QVariant data(const QModelIndex &index, int role) const;
 
 signals:
     void pathChanged();
     void showDotDotChanged();
+    void filterChanged();
 
 private:
     Q_PRIVATE_SLOT(d_func(), void _q_buildList())
