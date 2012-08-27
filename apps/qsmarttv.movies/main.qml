@@ -21,6 +21,7 @@
 
 import QtQuick 2.0
 import Theme.Components 1.0
+import SmartTV 1.0
 
 SmartApplication {
     initialWindow: mainComponent

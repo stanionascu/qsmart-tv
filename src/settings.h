@@ -50,6 +50,7 @@ public:
     const QString &appsDir() const;
     const QString &configDir() const;
     const QString &themesDir() const;
+    const QString &appsDataDir() const;
 
     const QString &themeName() const;
 

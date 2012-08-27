@@ -95,6 +95,8 @@ public:
         themesFolder = QStandardPaths::writableLocation(QStandardPaths::DataLocation) + QDir::separator() + "themes";
 #endif
 
+        appsDataFolder = QStandardPaths::writableLocation(QStandardPaths::DataLocation) + QDir::separator() + "apps";
+
         qDebug() << appsFolder;
         qDebug() << themesFolder;
         qDebug() << configFilePath;
@@ -122,9 +124,9 @@ private:
 
     QString appsFolder;
     QString themesFolder;
+    QString appsDataFolder;
 
     QString themeName;
-    QHash<QString, QString> appsFolderById;
 
     static Settings *instance;
 };
@@ -199,6 +201,12 @@ const QString &Settings::themeName() const
 {
     Q_D(const Settings);
     return d->themeName;
+}
+
+const QString &Settings::appsDataDir() const
+{
+    Q_D(const Settings);
+    return d->appsDataFolder;
 }
 
 }

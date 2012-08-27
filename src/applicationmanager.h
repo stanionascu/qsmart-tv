@@ -43,6 +43,9 @@ public:
 
     ApplicationModel *installedApplications();
 
+    QString configDir(const QString &appId);
+    QString cacheDir(const QString &appId);
+
 signals:
     void installedApplicationsChanged();
     

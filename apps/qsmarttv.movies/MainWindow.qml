@@ -40,10 +40,25 @@ Window {
         id: listModel
         filter: ["mov", "mp4", "mkv", "avi"]
 
+        path: settings.path
         onPathChanged: {
             list.currentIndex = 0
         }
     }
+
+    Settings {
+        id: settings
+
+        property string path: "/home"
+    }
+
+    Settings {
+        id: settingsOther
+        name: "other"
+
+        property string foo: "bar"
+    }
+
 
     ListView {
         id: list

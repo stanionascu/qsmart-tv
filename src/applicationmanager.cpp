@@ -34,6 +34,7 @@
 #include "application.h"
 #include "applicationmodel.h"
 #include "applicationloader.h"
+#include "applicationsettings.h"
 #include "folderlistmodel.h"
 #include "settings.h"
 
@@ -76,10 +77,18 @@ public:
             if (checkAppOrder(entry) != -1) {
                 Application *app = new Application(entry, q);
                 applications.append(app);
+
+                QString appDataDir = Settings::instance()->appsDataDir() + QDir::separator() + entry;
+                QString appCacheDir = appDataDir + QDir::separator() + "cache";
+                QString appConfigDir = appDataDir + QDir::separator() + "config";
+                appsDataFolders.insert(entry, appDataDir);
+                appsCacheFolders.insert(entry, appCacheDir);
+                appsConfigFolders.insert(entry, appConfigDir);
             } else {
                 qCritical() << "Invalid application:" << entry;
             }
         }
+        createDataFolders();
     }
 
     int checkAppOrder(const QString &app)
@@ -103,12 +112,33 @@ public:
         return categories.indexOf(appInfo["Category"].toString());
     }
 
+    void createDataFolders()
+    {
+        createFolders(appsDataFolders.values());
+        createFolders(appsCacheFolders.values());
+        createFolders(appsConfigFolders.values());
+    }
+
+    void createFolders(const QStringList &folders)
+    {
+        foreach(QString path, folders) {
+            QDir dir(path);
+            if (!dir.exists()) {
+                dir.mkpath(path);
+                qDebug() << "Creating folder:" << path;
+            }
+        }
+    }
+
 private:
     Q_DECLARE_PUBLIC(ApplicationManager)
     ApplicationManager *q_ptr;
 
     ApplicationModel applications;
     QStringList categories;
+    QHash<QString, QString> appsDataFolders;
+    QHash<QString, QString> appsConfigFolders;
+    QHash<QString, QString> appsCacheFolders;
 
     static ApplicationManager *instance;
 };
@@ -137,6 +167,7 @@ ApplicationManager *ApplicationManager::instance()
 
 void ApplicationManager::registerTypes()
 {
+    qmlRegisterType<SmartTV::ApplicationSettings>("SmartTV", 1, 0, "Settings");
     qmlRegisterType<SmartTV::ApplicationLoader>("SmartTV", 1, 0, "ApplicationLoader");
     qmlRegisterType<SmartTV::ApplicationModel>("SmartTV", 1, 0, "ApplicationModel");
     qmlRegisterType<SmartTV::FolderListModel>("SmartTV", 1, 0, "FolderListModel");
@@ -148,6 +179,18 @@ ApplicationModel *ApplicationManager::installedApplications()
 {
     Q_D(ApplicationManager);
     return &d->applications;
+}
+
+QString ApplicationManager::configDir(const QString &appId)
+{
+    Q_D(ApplicationManager);
+    return d->appsConfigFolders.value(appId, "");
+}
+
+QString ApplicationManager::cacheDir(const QString &appId)
+{
+    Q_D(ApplicationManager);
+    return d->appsCacheFolders.value(appId, "");
 }
 
 
