@@ -36,7 +36,6 @@ function push(window) {
 
         item.windowStack = root
         item.visible = true
-        item.focus = true
         root.currentWindow = item
         var pushAnimation = pushAnimationComponent.createObject(root)
         pushAnimation.window = item
@@ -55,17 +54,10 @@ function pop() {
     popAnimation.start()
     if (depth() !== 0) {
         item = windowStack[depth() - 1];
-        focusOn(item)
         root.currentWindow = item
-    } else {
-        focusOn(root.parent)
     }
 }
 
 function init(component) {
     return component.createObject(root)
-}
-
-function focusOn(item) {
-    item.focus = true
 }

@@ -35,7 +35,6 @@ Rectangle {
     property alias text: text.text
     property alias iconSource: icon.source
     property int angle: 0
-    property vector3d axis: Qt.vector3d(1, 0, 0)
 
     smooth: true
     clip: false
@@ -110,7 +109,7 @@ Rectangle {
     transform: Rotation {
         angle: root.angle
         origin: Qt.vector3d(width / 2, height / 2, 0)
-        axis: root.axis
+        axis: Qt.vector3d(0, 1, 0)
     }
 
     states: [
@@ -132,7 +131,6 @@ Rectangle {
                 target: root
                 angle: 180
                 explicit: true
-                axis: Qt.vector3d(0, 1, 0)
             }
             PropertyChanges {
                 target: miniContent
@@ -174,6 +172,9 @@ Rectangle {
                     NumberAnimation { target: root; properties: "y"; duration: 400 }
                     NumberAnimation { target: root; properties: "width"; duration: 400 }
                     NumberAnimation { target: root; properties: "height"; duration: 400 }
+                    ScriptAction {
+                        script: root.focus = true
+                    }
                 }
             }
         }

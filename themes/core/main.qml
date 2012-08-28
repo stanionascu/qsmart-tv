@@ -25,8 +25,6 @@ import SmartTV 1.0
 Theme {
     id: root
 
-    property int activeIndex: -1
-
     property int tileWidth: root.width * 0.4
     property int tileHeight: root.height * 0.4
 
@@ -54,18 +52,11 @@ Theme {
 
             property int categoryIndex: model.index
             property bool active: categoryIndex === categoriesList.currentIndex
-            property int angle: active ? 0 : categoryIndex > categoriesList.currentIndex ? 15 : -15
 
             z: active ? 1 : 0
             width: tileWidth; height: root.height
             opacity: categoriesList.currentIndex === categoryIndex ? 1.0 : 0.4
             focus: active
-
-            transform: Rotation {
-                angle: categoryPanel.angle
-                origin: Qt.vector3d(width / 2, height / 2, 0)
-                axis: Qt.vector3d(0, 1, 0)
-            }
 
             ListView {
                 id: applicationsList
@@ -76,6 +67,7 @@ Theme {
                 height: root.height
                 model: applications
                 interactive: false
+                focus: categoryPanel.active
 
                 delegate: Tile {
                     id: tile
@@ -83,7 +75,7 @@ Theme {
                     property bool active: applicationsList.currentIndex === model.index && categoryPanel.active
 
                     screen: root
-                    angle: active ? 0 : applicationsList.currentIndex > model.index ? 15 : -15
+                    focus: active
                     opacity: active ? 1.0 : 0.7
                     scale: active ? 1.0 : 0.9
                     width: tileWidth
@@ -106,20 +98,15 @@ Theme {
                     Behavior on scale { NumberAnimation { duration: 400 } }
                     Behavior on opacity { NumberAnimation { duration: 400 } }
                     Behavior on angle { NumberAnimation { duration: 400 } }
-
-                    onParentChanged: {
-                        categoriesList.focus = true
-                    }
                 }
 
                 Behavior on contentY { NumberAnimation { duration: 400 } }
 
-                Keys.onDownPressed: incrementCurrentIndex()
+                Keys.onDownPressed: { incrementCurrentIndex(); console.log(currentIndex) }
                 Keys.onUpPressed: decrementCurrentIndex()
             }
 
             Behavior on opacity { NumberAnimation { duration: 400 } }
-            Behavior on angle { NumberAnimation { duration: 400 } }
         }
 
         Keys.onRightPressed: incrementCurrentIndex()
