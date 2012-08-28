@@ -51,7 +51,14 @@ public:
     void load()
     {
         Q_Q(ApplicationSettings);
-        configFilePath = ApplicationManager::instance()->configDir(appId) + QDir::separator() + (name.isEmpty() ? "config.json" : name + ".config.json");
+
+        if (appId.isEmpty())
+            return;
+
+        QString newConfigFilePath = ApplicationManager::instance()->configDir(appId) + QDir::separator() + (name.isEmpty() ? "config.json" : name + ".config.json");
+        if (configFilePath == newConfigFilePath)
+            return;
+        configFilePath = newConfigFilePath;
         qDebug() << "Loading config:" << configFilePath;
 
         QJsonObject data;
@@ -73,6 +80,10 @@ public:
     void save()
     {
         Q_Q(ApplicationSettings);
+
+        if (appId.isEmpty() || configFilePath.isEmpty())
+            return;
+
         QJsonObject data;
         for (int i = 0; i < q->metaObject()->propertyCount(); i++) {
             QMetaProperty property = q->metaObject()->property(i);
