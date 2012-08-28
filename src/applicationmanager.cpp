@@ -30,8 +30,10 @@
 #include <QJsonObject>
 
 #include <QNetworkProxyFactory>
+#include <QSortFilterProxyModel>
 
 #include "application.h"
+#include "applicationcategorymodel.h"
 #include "applicationmodel.h"
 #include "applicationloader.h"
 #include "applicationsettings.h"
@@ -46,7 +48,6 @@ public:
     ApplicationManagerPrivate() :
         q_ptr(nullptr)
     {
-        categories << "Movies" << "TV Shows" << "Utilities" << "Settings";
     }
 
     void applySystemProxySettings()
@@ -73,10 +74,13 @@ public:
     {
         Q_Q(ApplicationManager);
         QDir appsDir(Settings::instance()->appsDir());
-        foreach(const QString &entry, appsDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
-            if (checkAppOrder(entry) != -1) {
+        QHash<QString, ApplicationModel*> appHashModel;
+        foreach(const QString &entry, appsDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name)) {
+            if (checkAppOrder(entry)) {
                 Application *app = new Application(entry, q);
-                applications.append(app);
+                if (!appHashModel.contains(app->category()))
+                    appHashModel.insert(app->category(), new ApplicationModel(&categories));
+                appHashModel[app->category()]->append(app);
 
                 QString appDataDir = Settings::instance()->appsDataDir() + QDir::separator() + entry;
                 QString appCacheDir = appDataDir + QDir::separator() + "cache";
@@ -88,28 +92,33 @@ public:
                 qCritical() << "Invalid application:" << entry;
             }
         }
+
+        foreach (QString key, appHashModel.keys()) {
+            categories.append(key, appHashModel[key]);
+        }
+
         createDataFolders();
     }
 
-    int checkAppOrder(const QString &app)
+    bool checkAppOrder(const QString &app)
     {
         if (app == "imports")
-            return -1;
+            return false;
 
         QString appFolder = Settings::instance()->appsDir() + QDir::separator() + app;
         QString appInfoFilePath = appFolder + QDir::separator() + "appinfo.json";
         QFile appInfoFile(appInfoFilePath);
         if (!appInfoFile.open(QFile::ReadOnly))
-            return -1;
+            return false;
 
         QJsonObject appInfo = QJsonDocument::fromJson(appInfoFile.readAll()).object();
         QStringList requiredAppInfoKeys;
         requiredAppInfoKeys << "Name" << "Version" << "Category" << "Icon";
         foreach (const QString &key, requiredAppInfoKeys)
             if (!appInfo.keys().contains(key, Qt::CaseInsensitive))
-                return -1;
+                return false;
 
-        return categories.indexOf(appInfo["Category"].toString());
+        return true;
     }
 
     void createDataFolders()
@@ -134,8 +143,7 @@ private:
     Q_DECLARE_PUBLIC(ApplicationManager)
     ApplicationManager *q_ptr;
 
-    ApplicationModel applications;
-    QStringList categories;
+    ApplicationCategoryModel categories;
     QHash<QString, QString> appsDataFolders;
     QHash<QString, QString> appsConfigFolders;
     QHash<QString, QString> appsCacheFolders;
@@ -169,16 +177,23 @@ void ApplicationManager::registerTypes()
 {
     qmlRegisterType<SmartTV::ApplicationSettings>("SmartTV", 1, 0, "Settings");
     qmlRegisterType<SmartTV::ApplicationLoader>("SmartTV", 1, 0, "ApplicationLoader");
-    qmlRegisterType<SmartTV::ApplicationModel>("SmartTV", 1, 0, "ApplicationModel");
     qmlRegisterType<SmartTV::FolderListModel>("SmartTV", 1, 0, "FolderListModel");
-    qmlRegisterUncreatableType<SmartTV::ApplicationManager>("SmartTV", 1, 0, "ApplicationManager", "Not allowed to create ApplicationManager instances.");
+
+    qmlRegisterUncreatableType<SmartTV::ApplicationModel>("SmartTV", 1, 0, "ApplicationModel", "Not allowed to create ApplicationModel instances.");
+    qmlRegisterUncreatableType<SmartTV::ApplicationCategoryModel>("SmartTV", 1, 0, "ApplicationCategoryModel", "Not allowed to create ApplicationCategoryModel instances.");
     qmlRegisterUncreatableType<SmartTV::Application>("SmartTV", 1, 0, "Application", "Not allowed to initialize Application instances.");
 }
 
-ApplicationModel *ApplicationManager::installedApplications()
+ApplicationCategoryModel *ApplicationManager::categories()
 {
     Q_D(ApplicationManager);
-    return &d->applications;
+    return &d->categories;
+}
+
+Application *ApplicationManager::findById(const QString &appId)
+{
+    Q_D(ApplicationManager);
+    return d->categories.findById(appId);
 }
 
 QString ApplicationManager::configDir(const QString &appId)

@@ -29,7 +29,7 @@ namespace SmartTV {
 class Application;
 class ApplicationModelPrivate;
 
-class ApplicationModel : public QAbstractItemModel
+class ApplicationModel : public QAbstractListModel
 {
     Q_OBJECT
 
@@ -51,14 +51,11 @@ public:
 
     void append(Application *app);
 
-    QModelIndex index(int row, int column, const QModelIndex &parent) const;
-    QModelIndex parent(const QModelIndex &child) const;
     int rowCount(const QModelIndex &parent) const;
-    int columnCount(const QModelIndex &parent) const;
     QVariant data(const QModelIndex &index, int role) const;
 
     int count() { return rowCount(QModelIndex()); }
-    Application *byId(const QString &id);
+    Application *findById(const QString &id);
     bool contains(const QString &id);
 
 signals:

@@ -26,6 +26,7 @@
 #include <QQmlContext>
 
 #include "applicationmanager.h"
+#include "applicationmodel.h"
 #include "application.h"
 
 namespace SmartTV {
@@ -69,13 +70,13 @@ public:
             item = nullptr;
         }
 
-        if (!component || appId.isEmpty() || !ApplicationManager::instance()->installedApplications()->contains(appId))
+        if (!component || appId.isEmpty())
             return;
 
         if (component->status() == QQmlComponent::Ready) {
             item = qobject_cast<QQuickItem*>(
                         component->create(
-                            ApplicationManager::instance()->installedApplications()->byId(appId)->context()));
+                            ApplicationManager::instance()->findById(appId)->context()));
             item->setParent(q);
             item->setParentItem(q);
             item->setPos(QPointF(0, 0));

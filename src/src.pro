@@ -19,7 +19,8 @@ SOURCES += \
     applicationmodel.cpp \
     folderlistmodel.cpp \
     applicationsettings.cpp \
-    applicationloader.cpp
+    applicationloader.cpp \
+    applicationcategorymodel.cpp
 
 RESOURCES +=
 
@@ -33,7 +34,8 @@ HEADERS += \
     applicationmodel.h \
     folderlistmodel.h \
     applicationsettings.h \
-    applicationloader.h
+    applicationloader.h \
+    applicationcategorymodel.h
 
 DEFINES += PREFIX  \
     APPS_PREFIX=\\\"..\\\" \

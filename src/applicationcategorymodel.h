@@ -19,33 +19,50 @@
 **  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 ******************************************************************************/
 
-import QtQuick 2.0
-import QtMultimedia 5.0
-import Theme.Components 1.0
+#ifndef APPLICATIONCATEGORYMODEL_H
+#define APPLICATIONCATEGORYMODEL_H
 
-Rectangle {
-    id: root
+#include <QAbstractItemModel>
 
-    property bool showControls: true
-    property alias source: video.source
+namespace SmartTV {
 
-    Video {
-        id: video
-        anchors.fill: parent
-        autoPlay: true
-    }
+class Application;
+class ApplicationModel;
+
+class ApplicationCategoryModelPrivate;
+class ApplicationCategoryModel : public QAbstractListModel
+{
+    Q_OBJECT
+
+    Q_PROPERTY(int count READ count NOTIFY rowCountChanged)
+public:
+    enum ApplicationCategoryRoles {
+        NameRole = Qt::UserRole + 1,
+        ApplicationsRole
+    };
+
+    explicit ApplicationCategoryModel(QObject *parent = 0);
+    virtual ~ApplicationCategoryModel();
+
+    virtual int rowCount(const QModelIndex &parent) const;
+    virtual QVariant data(const QModelIndex &index, int role) const;
+
+    void append(const QString &name, ApplicationModel *model);
+
+    Application *findById(const QString &appId);
+    void sortAndFilter(const QStringList &categories);
+
+    inline int count() { return rowCount(QModelIndex()); }
+
+signals:
+    void rowCountChanged();
+
+private:
+    Q_DECLARE_PRIVATE(ApplicationCategoryModel)
+    ApplicationCategoryModelPrivate *d_ptr;
+};
 
 
-    ProgressIndicator {
-        id: slider
-        value: video.position
-        maximum: video.duration
-        height: root.height / 20
-        anchors.left: root.left
-        anchors.right: root.right
-        anchors.bottom: root.bottom
-        opacity: showControls ? 1.0 : 0.0
-
-        Behavior on opacity { NumberAnimation { duration: 400 } }
-    }
 }
+
+#endif // APPLICATIONCATEGORYMODEL_H

@@ -5,4 +5,5 @@ OTHER_FILES = \
     Mini.qml \
     MainWindow.qml \
     main.qml \
-    PlaybackWindow.qml
+    PlaybackWindow.qml \
+    movies.png

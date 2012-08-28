@@ -20,32 +20,19 @@
 ******************************************************************************/
 
 import QtQuick 2.0
-import QtMultimedia 5.0
 import Theme.Components 1.0
 
-Rectangle {
-    id: root
+Window {
+    color: "black"
 
-    property bool showControls: true
-    property alias source: video.source
-
-    Video {
-        id: video
-        anchors.fill: parent
-        autoPlay: true
+    Text {
+        color: "white"
+        text: "Settings - fullscreen"
+        font.pixelSize: parent.width / 10
     }
 
-
-    ProgressIndicator {
-        id: slider
-        value: video.position
-        maximum: video.duration
-        height: root.height / 20
-        anchors.left: root.left
-        anchors.right: root.right
-        anchors.bottom: root.bottom
-        opacity: showControls ? 1.0 : 0.0
-
-        Behavior on opacity { NumberAnimation { duration: 400 } }
+    Keys.onEscapePressed: {
+        console.log("Settings: quit")
+        quit()
     }
 }

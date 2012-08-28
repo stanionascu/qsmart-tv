@@ -22,17 +22,14 @@
 import QtQuick 2.0
 import Theme.Components 1.0
 
-Window {
-    color: "black"
+SmartApplication {
 
-    Text {
-        color: "white"
-        text: "Settings - fullscreen"
-        font.pixelSize: parent.width / 10
-    }
+    initialWindow: mainWindow
 
-    Keys.onEscapePressed: {
-        console.log("Settings: quit")
-        quit()
+    Component {
+        id: mainWindow
+        SettingsWindow {
+
+        }
     }
 }

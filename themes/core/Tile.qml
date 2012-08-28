@@ -27,14 +27,19 @@ Rectangle {
     id: root
 
     property string appId
+
+    property Item screen: null
+
     property Component widget
     property Component content
-    property int angle: 0
     property alias text: text.text
     property alias iconSource: icon.source
+    property int angle: 0
+    property vector3d axis: Qt.vector3d(1, 0, 0)
 
     smooth: true
     clip: false
+    state: "MINI"
 
     Item {
         id: miniContent
@@ -71,7 +76,6 @@ Rectangle {
         id: contentLoader
         applicationId: appId
         anchors.fill: root
-        //asynchronous: true
         opacity: 0.0
         transform: Rotation {
             angle: 180
@@ -90,23 +94,10 @@ Rectangle {
         }
     }
 
-    transform: Rotation {
-        angle: root.angle
-        origin: Qt.vector3d(root.width / 2, root.height / 2, 0)
-        axis: Qt.vector3d(0, 1, 0)
-    }
-
     BusyIndicator {
         visible: widgetLoader.status !== Loader.Ready && contentLoader.status !== Loader.Ready && icon.status !== Image.Ready
         anchors.centerIn: parent
     }
-
-    Behavior on width { NumberAnimation { duration: 500 } }
-    Behavior on height { NumberAnimation { duration: 500 } }
-    Behavior on angle { NumberAnimation { duration: 700 } }
-    Behavior on x { NumberAnimation { duration: 400 } }
-    Behavior on y { NumberAnimation { duration: 400 } }
-    Behavior on scale { NumberAnimation { duration: 700 } }
 
     PropertyAnimation {
         id: widgetFadeOutAnimation
@@ -116,14 +107,15 @@ Rectangle {
         to: 0
     }
 
+    transform: Rotation {
+        angle: root.angle
+        origin: Qt.vector3d(width / 2, height / 2, 0)
+        axis: root.axis
+    }
+
     states: [
         State {
             name: "MINI"
-            PropertyChanges {
-                target: root
-                width: root.parent.width * 0.4
-                height: root.parent.height * 0.4
-            }
             PropertyChanges {
                 target: miniContent
                 opacity: 1.0
@@ -138,9 +130,9 @@ Rectangle {
             name: "FULL"
             PropertyChanges {
                 target: root
-                width: root.parent.width
-                height: root.parent.height
                 angle: 180
+                explicit: true
+                axis: Qt.vector3d(0, 1, 0)
             }
             PropertyChanges {
                 target: miniContent
@@ -150,6 +142,39 @@ Rectangle {
                 target: contentLoader
                 sourceComponent: content
                 opacity: 1.0
+            }
+            ParentChange {
+                target: root
+                parent: screen
+                x: 0; y: 0
+                width: screen.width; height: screen.height
+            }
+        }
+    ]
+
+    transitions: [
+        Transition {
+            from: "MINI"
+            to: "FULL"
+            ParentAnimation {
+                ParallelAnimation {
+                    NumberAnimation { target: root; properties: "x"; duration: 400 }
+                    NumberAnimation { target: root; properties: "y"; duration: 400 }
+                    NumberAnimation { target: root; properties: "width"; duration: 400 }
+                    NumberAnimation { target: root; properties: "height"; duration: 400 }
+                }
+            }
+        },
+        Transition {
+            from: "FULL"
+            to: "MINI"
+            ParentAnimation {
+                ParallelAnimation {
+                    NumberAnimation { target: root; properties: "x"; duration: 400 }
+                    NumberAnimation { target: root; properties: "y"; duration: 400 }
+                    NumberAnimation { target: root; properties: "width"; duration: 400 }
+                    NumberAnimation { target: root; properties: "height"; duration: 400 }
+                }
             }
         }
     ]

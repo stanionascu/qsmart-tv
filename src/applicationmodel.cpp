@@ -46,12 +46,12 @@ private:
     Q_DECLARE_PUBLIC(ApplicationModel)
     ApplicationModel *q_ptr;
 
+    QStringList applicationIds;
     QList<Application*> applicationList;
-    QHash<QString, int> applicationById;
 };
 
 ApplicationModel::ApplicationModel(QObject *parent) :
-    QAbstractItemModel(parent), d_ptr(new ApplicationModelPrivate)
+    QAbstractListModel(parent), d_ptr(new ApplicationModelPrivate)
 {
     d_ptr->q_ptr = this;
     QHash<int, QByteArray> roles;
@@ -79,29 +79,8 @@ void ApplicationModel::append(Application *app)
     Q_D(ApplicationModel);
     beginInsertRows(QModelIndex(), d->applicationList.count(), d->applicationList.count());
     d->applicationList.append(app);
-    d->applicationById[app->id()] = d->applicationList.count() - 1;
+    d->applicationIds.append(app->id());
     endInsertRows();
-}
-
-QModelIndex ApplicationModel::index(int row, int column, const QModelIndex &parent) const
-{
-    Q_D(const ApplicationModel);
-    if (parent.isValid() || row >= d->applicationList.count() || column != 0)
-        return QModelIndex();
-    else
-        return createIndex(row, column);
-}
-
-QModelIndex ApplicationModel::parent(const QModelIndex &child) const
-{
-    Q_UNUSED(child);
-    return QModelIndex();
-}
-
-int ApplicationModel::columnCount(const QModelIndex &parent) const
-{
-    Q_UNUSED(parent);
-    return 0;
 }
 
 int ApplicationModel::rowCount(const QModelIndex &parent) const
@@ -137,18 +116,18 @@ QVariant ApplicationModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-Application *ApplicationModel::byId(const QString &id)
+Application *ApplicationModel::findById(const QString &id)
 {
     Q_D(ApplicationModel);
-    if (!d->applicationById.contains(id))
+    if (!d->applicationIds.contains(id))
         return nullptr;
-    return d->applicationList[d->applicationById[id]];
+    return d->applicationList[d->applicationIds.indexOf(id)];
 }
 
 bool ApplicationModel::contains(const QString &id)
 {
     Q_D(ApplicationModel);
-    return d->applicationById.contains(id);
+    return d->applicationIds.contains(id);
 }
 
 }

@@ -27,6 +27,7 @@
 
 namespace SmartTV {
 
+class ApplicationCategoryModel;
 class ApplicationModel;
 class ThemePrivate;
 
@@ -34,15 +35,20 @@ class Theme : public QQuickItem
 {
     Q_OBJECT
 
-    Q_PROPERTY(SmartTV::ApplicationModel *applications READ applications NOTIFY applicationsChanged)
+    Q_PROPERTY(QStringList displayCategories READ displayCategories WRITE setDisplayCategories NOTIFY displayCategoriesChanged)
+    Q_PROPERTY(SmartTV::ApplicationCategoryModel *categories READ categories NOTIFY categoriesChanged)
 public:
     explicit Theme(QQuickItem *parent = 0);
     virtual ~Theme();
     
-    ApplicationModel *applications();
+    ApplicationCategoryModel *categories();
+
+    const QStringList &displayCategories();
+    void setDisplayCategories(const QStringList &displayCategories);
 
 signals:
-    void applicationsChanged();
+    void displayCategoriesChanged();
+    void categoriesChanged();
     
 public slots:
 

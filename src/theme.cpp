@@ -24,6 +24,7 @@
 #include <QQmlEngine>
 
 #include "applicationmanager.h"
+#include "applicationcategorymodel.h"
 
 namespace SmartTV {
 
@@ -39,17 +40,22 @@ public:
     {
     }
 
+    void _q_sort()
+    {
+        ApplicationManager::instance()->categories()->sortAndFilter(displayCategories);
+    }
+
 private:
     Q_DECLARE_PUBLIC(Theme)
     Theme *q_ptr;
 
+    QStringList displayCategories;
 };
 
 Theme::Theme(QQuickItem *parent) :
     QQuickItem(parent), d_ptr(new ThemePrivate)
 {
     d_ptr->q_ptr = this;
-    connect(ApplicationManager::instance(), SIGNAL(installedApplicationsChanged()), this, SIGNAL(applicationsChanged()));
 }
 
 Theme::~Theme()
@@ -57,9 +63,25 @@ Theme::~Theme()
     delete d_ptr;
 }
 
-ApplicationModel *Theme::applications()
+ApplicationCategoryModel *Theme::categories()
 {
-    return ApplicationManager::instance()->installedApplications();
+    return ApplicationManager::instance()->categories();
+}
+
+const QStringList &Theme::displayCategories()
+{
+    Q_D(Theme);
+    return d->displayCategories;
+}
+
+void Theme::setDisplayCategories(const QStringList &categoriesOrder)
+{
+    Q_D(Theme);
+    if (d->displayCategories != categoriesOrder) {
+        d->displayCategories = categoriesOrder;
+        d->_q_sort();
+        emit displayCategoriesChanged();
+    }
 }
 
 }

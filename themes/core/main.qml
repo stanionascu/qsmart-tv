@@ -26,63 +26,105 @@ Theme {
     id: root
 
     property int activeIndex: -1
-    property int selectedIndex: 0
+
+    property int tileWidth: root.width * 0.4
+    property int tileHeight: root.height * 0.4
+
+    displayCategories: ["Live TV", "Movies", "TV Shows", "Music", "Pictures", "Utilities", "Settings"]
+
     focus: true
 
     Keys.onEscapePressed: {
         Qt.quit()
     }
 
-    Keys.onReturnPressed: {
-        if (applicationsRepeater.itemAt(selectedIndex).state === "MINI") {
-            applicationsRepeater.itemAt(selectedIndex).state = "FULL"
-        }
-    }
-
-    Keys.onRightPressed: {
-        if (selectedIndex < applications.count - 1)
-            selectedIndex ++
-    }
-
-    Keys.onLeftPressed: {
-        if (selectedIndex > 0)
-            selectedIndex --
-    }
-
     Image { anchors.fill: parent; source: "images/videos.jpg"; fillMode: Image.PreserveAspectFit }
 
-    Repeater {
-        id: applicationsRepeater
+    ListView {
+        id: categoriesList
+        currentIndex: 0
+        contentX: -(root.width - tileWidth) / 2 + currentIndex * tileWidth; y: (root.height - tileHeight) / 2
+        width: root.width; height: root.height
+        model: categories
+        orientation: ListView.Horizontal
+        interactive: false
 
-        anchors.fill: parent
+        delegate: FocusScope {
+            id: categoryPanel
 
-        model: applications
-        Tile {
-            id: tile
-            appId: identifier
-            text: name
-            x: state === "FULL" ? 0 : (index - selectedIndex) * (root.width * 0.4 + 5) + root.width * 0.6 / 2
-            y: state === "FULL" ? 0 : root.height * 0.6 / 2
-            width: root.width * 0.4
-            height: root.height * 0.4
-            color: "blue"
-            iconSource: icon.length > 0 ? icon : ""
-            widget: widgetComponent
-            content: contentComponent
-            state: "MINI"
+            property int categoryIndex: model.index
+            property bool active: categoryIndex === categoriesList.currentIndex
+            property int angle: active ? 0 : categoryIndex > categoriesList.currentIndex ? 15 : -15
 
-            opacity: index !== selectedIndex ? activeIndex === -1 ? 0.6 : 0.0 : 1.0
-            angle: index === selectedIndex ? 0 : index < selectedIndex ? -45 : 45
-            scale: index === selectedIndex ? 1.0 : 0.9
-            z: index === selectedIndex ? 2 : 1
+            z: active ? 1 : 0
+            width: tileWidth; height: root.height
+            opacity: categoriesList.currentIndex === categoryIndex ? 1.0 : 0.4
+            focus: active
 
-            Behavior on opacity { NumberAnimation { duration: 500 } }
-            onStateChanged: {
-                if (state === "FULL")
-                    activeIndex = index
-                else if (state === "MINI" && activeIndex === index)
-                    activeIndex = -1
+            transform: Rotation {
+                angle: categoryPanel.angle
+                origin: Qt.vector3d(width / 2, height / 2, 0)
+                axis: Qt.vector3d(0, 1, 0)
             }
+
+            ListView {
+                id: applicationsList
+                currentIndex: 0
+                contentY: currentIndex * tileHeight
+                clip: false
+                width: tileWidth
+                height: root.height
+                model: applications
+                interactive: false
+
+                delegate: Tile {
+                    id: tile
+
+                    property bool active: applicationsList.currentIndex === model.index && categoryPanel.active
+
+                    screen: root
+                    angle: active ? 0 : applicationsList.currentIndex > model.index ? 15 : -15
+                    opacity: active ? 1.0 : 0.7
+                    scale: active ? 1.0 : 0.9
+                    width: tileWidth
+                    height: tileHeight
+                    color: "blue"
+                    z: active ? 1 : 0
+                    parent: applicationsList
+                    state: "MINI"
+
+                    appId: model.identifier
+                    text: model.name
+                    iconSource: model.icon.length > 0 ? model.icon : ""
+                    widget: model.widgetComponent
+                    content: model.contentComponent
+
+                    Keys.onReturnPressed: {
+                        state = "FULL"
+                    }
+
+                    Behavior on scale { NumberAnimation { duration: 400 } }
+                    Behavior on opacity { NumberAnimation { duration: 400 } }
+                    Behavior on angle { NumberAnimation { duration: 400 } }
+
+                    onParentChanged: {
+                        categoriesList.focus = true
+                    }
+                }
+
+                Behavior on contentY { NumberAnimation { duration: 400 } }
+
+                Keys.onDownPressed: incrementCurrentIndex()
+                Keys.onUpPressed: decrementCurrentIndex()
+            }
+
+            Behavior on opacity { NumberAnimation { duration: 400 } }
+            Behavior on angle { NumberAnimation { duration: 400 } }
         }
+
+        Keys.onRightPressed: incrementCurrentIndex()
+        Keys.onLeftPressed: decrementCurrentIndex()
+
+        Behavior on contentX { NumberAnimation { duration: 400 } }
     }
 }

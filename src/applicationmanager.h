@@ -23,25 +23,27 @@
 #define APPLICATIONMANAGER_H
 
 #include <QObject>
-#include "applicationmodel.h"
 
 namespace SmartTV {
 
 class Application;
+class ApplicationCategoryModel;
+class ApplicationModel;
 class ApplicationManagerPrivate;
 
 class ApplicationManager : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(SmartTV::ApplicationModel *installedApplications READ installedApplications NOTIFY installedApplicationsChanged)
 public:
     virtual ~ApplicationManager();
     
     static ApplicationManager* instance();
     void registerTypes();
 
-    ApplicationModel *installedApplications();
+    ApplicationCategoryModel *categories();
+    Application *findById(const QString &id);
+
 
     QString configDir(const QString &appId);
     QString cacheDir(const QString &appId);
