@@ -8,6 +8,8 @@ TARGET = qsmart-tv
 
 QMAKE_CXXFLAGS += -std=c++11
 
+LIBS += -lvlc
+
 SOURCES += \
     main.cpp \
     settings.cpp \
@@ -20,7 +22,8 @@ SOURCES += \
     folderlistmodel.cpp \
     applicationsettings.cpp \
     applicationloader.cpp \
-    applicationcategorymodel.cpp
+    applicationcategorymodel.cpp \
+    vlcvideoitem.cpp
 
 RESOURCES +=
 
@@ -35,7 +38,8 @@ HEADERS += \
     folderlistmodel.h \
     applicationsettings.h \
     applicationloader.h \
-    applicationcategorymodel.h
+    applicationcategorymodel.h \
+    vlcvideoitem.h
 
 DEFINES += PREFIX  \
     APPS_PREFIX=\\\"..\\\" \
