@@ -129,7 +129,6 @@ void ApplicationCategoryModel::sortAndFilter(const QStringList &categories)
     }
 
     // Append categories whose order is not known
-    unSortedCategories.sort();
     foreach (QString category, unSortedCategories) {
         d->categories.append(category);
         d->applications.append(unSortedApplications[unSortedCategories.indexOf(category)]);
