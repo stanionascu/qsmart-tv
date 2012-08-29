@@ -33,9 +33,17 @@ class VLCVideoItem : public QQuickPaintedItem
 
     Q_PROPERTY(QUrl source READ source WRITE setSource NOTIFY sourceChanged)
     Q_PROPERTY(bool autoPlay READ autoPlay WRITE setAutoPlay NOTIFY autoPlayChanged)
-    Q_PROPERTY(uint duration READ duration NOTIFY durationChanged)
-    Q_PROPERTY(uint position READ position WRITE setPosition NOTIFY positionChanged)
+    Q_PROPERTY(qint64 duration READ duration NOTIFY durationChanged)
+    Q_PROPERTY(qint64 position READ position WRITE setPosition NOTIFY positionChanged)
 public:
+    enum State {
+        Playing,
+        Stopped,
+        Paused,
+        NoMedia,
+        InvalidMedia
+    };
+
     explicit VLCVideoItem(QQuickItem *parent = 0);
     virtual ~VLCVideoItem();
 
@@ -45,24 +53,31 @@ public:
     bool autoPlay();
     void setAutoPlay(bool autoPlay);
 
-    uint duration() const;
-    uint position() const;
-    void setPosition(uint position);
+    qint64 duration() const;
+    qint64 position() const;
+    void setPosition(qint64 position);
     
 signals:
     void sourceChanged();
     void autoPlayChanged();
     void durationChanged();
     void positionChanged();
+    void stateChanged();
     
 public slots:
+    void play();
+    void pause();
+    void stop();
 
 protected:
     virtual void paint(QPainter *painter);
     virtual void componentComplete();
+    virtual void geometryChanged(const QRectF &newGeometry, const QRectF &oldGeometry);
 
 private:
-    Q_PRIVATE_SLOT(d_func(), void _q_updateVLCMedia())
+    Q_PRIVATE_SLOT(d_func(), void _q_updateSourceMedia())
+    Q_PRIVATE_SLOT(d_func(), void _q_renderFrame())
+    Q_PRIVATE_SLOT(d_func(), void _q_updatePosition())
 
 private:
     Q_DECLARE_PRIVATE(VLCVideoItem)

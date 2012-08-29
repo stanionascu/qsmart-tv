@@ -23,6 +23,7 @@
 
 #include <QMutex>
 #include <QPainter>
+#include <QTimer>
 #include <QDebug>
 
 #include <vlc/vlc.h>
@@ -33,15 +34,18 @@ class VLCVideoItemPrivate
 {
 public:
     VLCVideoItemPrivate() :
-        q_ptr(nullptr), autoPlay(true), duration(0),
+        q_ptr(nullptr), autoPlay(true), dirty(true),
         vlcInstance(nullptr), vlcMedia(nullptr),
         vlcPlayer(nullptr)
     {
-        pixels = QImage(640, 480, QImage::Format_RGB32);
+        frameTimer.setInterval(20);
     }
 
     ~VLCVideoItemPrivate()
     {
+        libvlc_media_player_stop(vlcPlayer);
+        libvlc_media_release(vlcMedia);
+        libvlc_media_player_release(vlcPlayer);
         libvlc_free(vlcInstance);
     }
 
@@ -49,13 +53,37 @@ public:
     {
         libvlc_free(vlcInstance);
 
+        frame = QImage(640, 480, QImage::Format_RGB32);
+
         vlcInstance = libvlc_new(0, nullptr);
         vlcPlayer = libvlc_media_player_new(vlcInstance);
+        vlcPlayerEventManager = libvlc_media_player_event_manager(vlcPlayer);
+
+        libvlc_event_attach(vlcPlayerEventManager, libvlc_MediaPlayerLengthChanged, _event, this);
+        libvlc_event_attach(vlcPlayerEventManager, libvlc_MediaPlayerPositionChanged, _event, this);
+
         libvlc_video_set_callbacks(vlcPlayer, _lock, _unlock, _display, this);
     }
 
-    void _q_updateVLCMedia()
+    static void _event(const libvlc_event_t *event, void *data)
     {
+        VLCVideoItemPrivate *d = static_cast<VLCVideoItemPrivate*>(data);
+        switch (event->type) {
+        case libvlc_MediaPlayerLengthChanged:
+            emit d->q_func()->durationChanged();
+            break;
+        case libvlc_MediaPlayerPositionChanged:
+            emit d->q_func()->positionChanged();
+            break;
+        default:
+            return;
+        }
+    }
+
+    void _q_updateSourceMedia()
+    {
+        Q_Q(VLCVideoItem);
+
         if (vlcMedia) {
             libvlc_media_player_stop(vlcPlayer);
             libvlc_media_release(vlcMedia);
@@ -72,16 +100,19 @@ public:
             vlcMedia = libvlc_media_new_location(vlcInstance, sourceUrl.toString().toAscii());
 
         libvlc_media_player_set_media(vlcPlayer, vlcMedia);
-        libvlc_video_set_format(vlcPlayer, "RV32", 640, 480, 640*4);
+        libvlc_video_set_format(vlcPlayer, "RV32", frame.width(), frame.height(), frame.width() * 4);
 
         if (autoPlay)
-            libvlc_media_player_play(vlcPlayer);
+            q->play();
+        frameTimer.start();
+
+        emit q->positionChanged();
     }
 
     static void *_lock(void *data, void **pixels)
     {
         ((VLCVideoItemPrivate*)data)->mutex.lock();
-        *pixels = ((VLCVideoItemPrivate*)data)->pixels.bits();
+        *pixels = ((VLCVideoItemPrivate*)data)->frame.bits();
         return nullptr;
     }
 
@@ -94,8 +125,23 @@ public:
 
     static void _display(void *data, void *id)
     {
-        ((VLCVideoItemPrivate*)data)->q_ptr->update();
+        ((VLCVideoItemPrivate*)data)->dirty = true;
+        Q_UNUSED(data);
         Q_UNUSED(id);
+    }
+
+    void _q_renderFrame()
+    {
+        Q_Q(VLCVideoItem);
+        if (dirty)
+            q->update();
+        dirty = false;
+    }
+
+    void _q_updatePosition()
+    {
+        Q_Q(VLCVideoItem);
+        emit q->positionChanged();
     }
 
 private:
@@ -107,12 +153,17 @@ private:
     uint duration;
 
     QMutex mutex;
-    QImage pixels;
+    QImage frame;
+
+    bool dirty;
+
+    QTimer frameTimer;
 
     //VLC
     libvlc_instance_t *vlcInstance;
     libvlc_media_t *vlcMedia;
     libvlc_media_player_t *vlcPlayer;
+    libvlc_event_manager_t *vlcPlayerEventManager;
 };
 
 VLCVideoItem::VLCVideoItem(QQuickItem *parent) :
@@ -120,7 +171,8 @@ VLCVideoItem::VLCVideoItem(QQuickItem *parent) :
 {
     d_ptr->q_ptr = this;
 
-    connect(this, SIGNAL(sourceChanged()), this, SLOT(_q_updateVLCMedia()));
+    connect(this, SIGNAL(sourceChanged()), this, SLOT(_q_updateSourceMedia()));
+    connect(&d_ptr->frameTimer, SIGNAL(timeout()), this, SLOT(_q_renderFrame()));
 }
 
 VLCVideoItem::~VLCVideoItem()
@@ -158,26 +210,33 @@ void VLCVideoItem::setAutoPlay(bool autoPlay)
     }
 }
 
-uint VLCVideoItem::duration() const
+qint64 VLCVideoItem::duration() const
 {
+    Q_D(const VLCVideoItem);
+    if (d->vlcPlayer)
+        return libvlc_media_player_get_length(d->vlcPlayer);
     return 0;
 }
 
-uint VLCVideoItem::position() const
+qint64 VLCVideoItem::position() const
 {
+    Q_D(const VLCVideoItem);
+    if (d->vlcPlayer)
+        return libvlc_media_player_get_time(d->vlcPlayer);
     return 0;
 }
 
-void VLCVideoItem::setPosition(uint position)
+void VLCVideoItem::setPosition(qint64 position)
 {
-    Q_UNUSED(position);
+    Q_D(VLCVideoItem);
+    libvlc_media_player_set_time(d->vlcPlayer, position);
 }
 
 void VLCVideoItem::paint(QPainter *painter)
 {
     Q_D(VLCVideoItem);
     d->mutex.lock();
-    painter->drawImage(0, 0, d->pixels);
+    painter->drawImage(boundingRect(), d->frame);
     d->mutex.unlock();
 }
 
@@ -187,7 +246,40 @@ void VLCVideoItem::componentComplete()
     QQuickPaintedItem::componentComplete();
 
     d->initializeVLC();
-    d->_q_updateVLCMedia();
+    d->_q_updateSourceMedia();
+}
+
+void VLCVideoItem::geometryChanged(const QRectF &newGeometry, const QRectF &oldGeometry)
+{
+    Q_D(VLCVideoItem);
+    QQuickPaintedItem::geometryChanged(newGeometry, oldGeometry);
+
+    if (newGeometry.size() != oldGeometry.size() && newGeometry.size().isValid()) {
+        d->mutex.lock();
+        d->frame = QImage(newGeometry.size().toSize(), QImage::Format_RGB32);
+        if (d->vlcPlayer) {
+            libvlc_video_set_format(d->vlcPlayer, "RV32", d->frame.width(), d->frame.height(), d->frame.width() * 4);
+        }
+        d->mutex.unlock();
+    }
+}
+
+void VLCVideoItem::play()
+{
+    Q_D(VLCVideoItem);
+    libvlc_media_player_play(d->vlcPlayer);
+}
+
+void VLCVideoItem::pause()
+{
+    Q_D(VLCVideoItem);
+    libvlc_media_player_pause(d->vlcPlayer);
+}
+
+void VLCVideoItem::stop()
+{
+    Q_D(VLCVideoItem);
+    libvlc_media_player_stop(d->vlcPlayer);
 }
 
 }
