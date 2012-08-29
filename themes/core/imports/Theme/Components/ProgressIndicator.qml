@@ -33,7 +33,7 @@ Rectangle {
 
     Rectangle {
         id: total
-        height: root.height / 10
+        height: root.height / 5
         anchors.verticalCenter: root.verticalCenter
         anchors.right: root.right
         anchors.left: root.left
