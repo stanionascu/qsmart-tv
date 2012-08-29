@@ -72,12 +72,10 @@ public slots:
 protected:
     virtual void paint(QPainter *painter);
     virtual void componentComplete();
-    virtual void geometryChanged(const QRectF &newGeometry, const QRectF &oldGeometry);
 
 private:
     Q_PRIVATE_SLOT(d_func(), void _q_updateSourceMedia())
     Q_PRIVATE_SLOT(d_func(), void _q_renderFrame())
-    Q_PRIVATE_SLOT(d_func(), void _q_updatePosition())
 
 private:
     Q_DECLARE_PRIVATE(VLCVideoItem)

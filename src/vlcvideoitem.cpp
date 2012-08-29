@@ -53,8 +53,6 @@ public:
     {
         libvlc_free(vlcInstance);
 
-        frame = QImage(640, 480, QImage::Format_RGB32);
-
         vlcInstance = libvlc_new(0, nullptr);
         vlcPlayer = libvlc_media_player_new(vlcInstance);
         vlcPlayerEventManager = libvlc_media_player_event_manager(vlcPlayer);
@@ -63,6 +61,7 @@ public:
         libvlc_event_attach(vlcPlayerEventManager, libvlc_MediaPlayerPositionChanged, _event, this);
 
         libvlc_video_set_callbacks(vlcPlayer, _lock, _unlock, _display, this);
+        libvlc_video_set_format_callbacks(vlcPlayer, _setupFrame, nullptr);
     }
 
     static void _event(const libvlc_event_t *event, void *data)
@@ -78,6 +77,20 @@ public:
         default:
             return;
         }
+    }
+
+    static unsigned _setupFrame(void **data, char *chroma,
+                            unsigned *width, unsigned *height,
+                            unsigned *pitches,
+                            unsigned *lines)
+    {
+        VLCVideoItemPrivate *d = static_cast<VLCVideoItemPrivate*>(*data);
+        strcpy(chroma, "RV32");
+        d->frame = QImage(*width, *height, QImage::Format_RGB32);
+
+        *pitches = *width * 4;
+        *lines = *height;
+        return 1;
     }
 
     void _q_updateSourceMedia()
@@ -100,7 +113,6 @@ public:
             vlcMedia = libvlc_media_new_location(vlcInstance, sourceUrl.toString().toAscii());
 
         libvlc_media_player_set_media(vlcPlayer, vlcMedia);
-        libvlc_video_set_format(vlcPlayer, "RV32", frame.width(), frame.height(), frame.width() * 4);
 
         if (autoPlay)
             q->play();
@@ -136,12 +148,6 @@ public:
         if (dirty)
             q->update();
         dirty = false;
-    }
-
-    void _q_updatePosition()
-    {
-        Q_Q(VLCVideoItem);
-        emit q->positionChanged();
     }
 
 private:
@@ -247,21 +253,6 @@ void VLCVideoItem::componentComplete()
 
     d->initializeVLC();
     d->_q_updateSourceMedia();
-}
-
-void VLCVideoItem::geometryChanged(const QRectF &newGeometry, const QRectF &oldGeometry)
-{
-    Q_D(VLCVideoItem);
-    QQuickPaintedItem::geometryChanged(newGeometry, oldGeometry);
-
-    if (newGeometry.size() != oldGeometry.size() && newGeometry.size().isValid()) {
-        d->mutex.lock();
-        d->frame = QImage(newGeometry.size().toSize(), QImage::Format_RGB32);
-        if (d->vlcPlayer) {
-            libvlc_video_set_format(d->vlcPlayer, "RV32", d->frame.width(), d->frame.height(), d->frame.width() * 4);
-        }
-        d->mutex.unlock();
-    }
 }
 
 void VLCVideoItem::play()
