@@ -38,7 +38,7 @@ Window {
 
     FolderListModel {
         id: listModel
-        filter: ["mov", "mp4", "mkv", "avi"]
+        filter: ["mov", "mp4", "mkv", "avi", "m2ts", "ts"]
 
         path: settings.path
         onPathChanged: {
