@@ -2,4 +2,6 @@ TEMPLATE = aux
 
 OTHER_FILES = \
     appinfo.json \
-    music.png
+    music.png \
+    main.qml \
+    MainWindow.qml

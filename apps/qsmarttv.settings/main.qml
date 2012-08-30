@@ -28,7 +28,7 @@ SmartApplication {
 
     Component {
         id: mainWindow
-        SettingsWindow {
+        MainWindow {
 
         }
     }

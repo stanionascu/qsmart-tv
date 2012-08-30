@@ -21,22 +21,20 @@
 
 import QtQuick 2.0
 import Theme.Components 1.0
-import SmartTV 1.0
 
-SmartApplication {
-    initialWindow: mainComponent
+Window {
+    focus: true
 
-    Component {
-        id: mainComponent
-        MainWindow {
+    color: "black"
 
-        }
+    Text {
+        color: "white"
+        text: "Pictures - fullscreen"
+        font.pixelSize: parent.width / 10
     }
 
     Keys.onEscapePressed: {
-        if (windowStack.depth > 1)
-            windowStack.pop()
-        else
-            quit()
+        console.log("Pictures: quit")
+        quit()
     }
 }
