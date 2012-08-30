@@ -53,7 +53,10 @@ public:
     {
         libvlc_free(vlcInstance);
 
-        vlcInstance = libvlc_new(0, nullptr);
+        char **argv = new char*[1];
+        argv[0] = "--ffmpeg-hw";
+
+        vlcInstance = libvlc_new(1, argv);
         vlcPlayer = libvlc_media_player_new(vlcInstance);
         vlcPlayerEventManager = libvlc_media_player_event_manager(vlcPlayer);
 
