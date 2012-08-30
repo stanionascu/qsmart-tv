@@ -75,7 +75,6 @@ Theme {
                     property bool active: applicationsList.currentIndex === model.index && categoryPanel.active
 
                     screen: root
-                    focus: active
                     opacity: active ? 1.0 : 0.7
                     scale: active ? 1.0 : 0.9
                     width: tileWidth
@@ -92,7 +91,8 @@ Theme {
                     content: model.contentComponent
 
                     Keys.onReturnPressed: {
-                        state = "FULL"
+                        if (active)
+                            state = "FULL"
                     }
 
                     Behavior on scale { NumberAnimation { duration: 400 } }
@@ -102,7 +102,7 @@ Theme {
 
                 Behavior on contentY { NumberAnimation { duration: 400 } }
 
-                Keys.onDownPressed: { incrementCurrentIndex(); console.log(currentIndex) }
+                Keys.onDownPressed: incrementCurrentIndex()
                 Keys.onUpPressed: decrementCurrentIndex()
             }
 
