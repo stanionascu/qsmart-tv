@@ -55,9 +55,10 @@ public:
 
         static char const *argv[] =
         {
-            "--ffmpeg-hw"
+            "--ffmpeg-hw",
+            "--no-video-title-show"
         };
-        vlcInstance = libvlc_new(1, argv);
+        vlcInstance = libvlc_new(2, argv);
         vlcPlayer = libvlc_media_player_new(vlcInstance);
         vlcPlayerEventManager = libvlc_media_player_event_manager(vlcPlayer);
 
