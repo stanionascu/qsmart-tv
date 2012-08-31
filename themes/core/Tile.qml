@@ -55,7 +55,7 @@ Rectangle {
             id: text
             text: qsTr("Tile")
             color: "white"
-            font.pixelSize: root.width / 10
+            font.pixelSize: 20 * PPMY
             style: Text.Sunken
             anchors.fill: parent
         }
