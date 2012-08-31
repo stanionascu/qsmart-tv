@@ -55,6 +55,9 @@ public slots:
     void show();
 
 private:
+    Q_PRIVATE_SLOT(d_func(), void _q_updatePPI())
+
+private:
     Q_DECLARE_PRIVATE(Window)
     WindowPrivate *d_ptr;
 };

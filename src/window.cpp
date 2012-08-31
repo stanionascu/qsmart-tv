@@ -31,6 +31,8 @@
 #include <QQuickView>
 #include <QJsonValue>
 
+#include <QDesktopWidget>
+
 #include "applicationmanager.h"
 #include "application.h"
 #include "settings.h"
@@ -74,6 +76,9 @@ public:
         q->connect(view->engine(), SIGNAL(quit()), QApplication::instance(), SLOT(quit()));
         q->connect(view, SIGNAL(widthChanged(int)), q, SIGNAL(widthChanged()));
         q->connect(view, SIGNAL(heightChanged(int)), q, SIGNAL(heightChanged()));
+
+        q->connect(view, SIGNAL(widthChanged(int)), q, SLOT(_q_updatePPI()));
+        q->connect(view, SIGNAL(heightChanged(int)), q, SLOT(_q_updatePPI()));
     }
 
     void registerTypes()
@@ -83,6 +88,7 @@ public:
                                       QDir::separator() + "imports");
 
         view->engine()->rootContext()->setContextProperty("context_AppId", "global");
+        _q_updatePPI();
 
         qDebug() << view->engine()->importPathList();
 
@@ -105,6 +111,22 @@ public:
             view->showFullScreen();
         else
             view->showNormal();
+    }
+
+    void _q_updatePPI()
+    {
+        if (view) {
+            qreal widthMM = QApplication::desktop()->widthMM();
+            qreal heightMM = QApplication::desktop()->heightMM();
+            qreal width = QApplication::desktop()->width();
+            qreal height = QApplication::desktop()->height();
+
+            qreal PPMX = width / widthMM * ((qreal)view->width() / width);
+            qreal PPMY = height / heightMM * ((qreal)view->height() / height);
+
+            view->rootContext()->setContextProperty("PPMX", PPMX);
+            view->rootContext()->setContextProperty("PPMY", PPMY);
+        }
     }
 
 private:
@@ -160,3 +182,5 @@ void Window::show()
 }
 
 }
+
+#include "moc_window.cpp"
