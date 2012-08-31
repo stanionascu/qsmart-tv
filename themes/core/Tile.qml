@@ -172,9 +172,6 @@ Rectangle {
                     NumberAnimation { target: root; properties: "y"; duration: 400 }
                     NumberAnimation { target: root; properties: "width"; duration: 400 }
                     NumberAnimation { target: root; properties: "height"; duration: 400 }
-                    ScriptAction {
-                        script: root.focus = true
-                    }
                 }
             }
         }

@@ -36,7 +36,7 @@ Theme {
         Qt.quit()
     }
 
-    Image { anchors.fill: parent; source: "images/videos.jpg"; fillMode: Image.PreserveAspectFit }
+    Image { anchors.fill: parent; source: "images/videos.jpg"; fillMode: Image.PreserveAspectCrop }
 
     ListView {
         id: categoriesList
@@ -51,29 +51,29 @@ Theme {
             id: categoryPanel
 
             property int categoryIndex: model.index
+            property int currentIndex: 0
             property bool active: categoryIndex === categoriesList.currentIndex
 
+            y: -currentIndex * tileHeight
             z: active ? 1 : 0
             width: tileWidth; height: root.height
             opacity: categoriesList.currentIndex === categoryIndex ? 1.0 : 0.4
             focus: active
 
-            ListView {
+            Repeater {
                 id: applicationsList
-                currentIndex: 0
-                contentY: currentIndex * tileHeight
+
                 clip: false
                 width: tileWidth
-                height: root.height
                 model: applications
-                interactive: false
                 focus: categoryPanel.active
 
                 delegate: Tile {
                     id: tile
 
-                    property bool active: applicationsList.currentIndex === model.index && categoryPanel.active
+                    property bool active: categoryPanel.currentIndex === model.index && categoryPanel.active
 
+                    y: index * tileHeight
                     screen: root
                     opacity: active ? 1.0 : 0.7
                     scale: active ? 1.0 : 0.9
@@ -81,7 +81,6 @@ Theme {
                     height: tileHeight
                     color: "blue"
                     z: active ? 1 : 0
-                    parent: applicationsList
                     state: "MINI"
 
                     appId: model.identifier
@@ -90,22 +89,29 @@ Theme {
                     widget: model.widgetComponent
                     content: model.contentComponent
 
-                    Keys.onReturnPressed: {
-                        if (active)
-                            state = "FULL"
-                    }
-
                     Behavior on scale { NumberAnimation { duration: 400 } }
                     Behavior on opacity { NumberAnimation { duration: 400 } }
                     Behavior on angle { NumberAnimation { duration: 400 } }
                 }
-
-                Behavior on contentY { NumberAnimation { duration: 400 } }
-
-                Keys.onDownPressed: incrementCurrentIndex()
-                Keys.onUpPressed: decrementCurrentIndex()
             }
 
+            Keys.onDownPressed: {
+                if (categoryPanel.currentIndex < applications.count - 1)
+                    categoryPanel.currentIndex ++
+            }
+
+            Keys.onUpPressed: {
+                if (categoryPanel.currentIndex > 0)
+                    categoryPanel.currentIndex --
+            }
+
+            Keys.onReturnPressed: {
+                var item = applicationsList.itemAt(categoryPanel.currentIndex)
+                if (item)
+                    item.state = "FULL"
+            }
+
+            Behavior on y { NumberAnimation { duration: 400 } }
             Behavior on opacity { NumberAnimation { duration: 400 } }
         }
 
