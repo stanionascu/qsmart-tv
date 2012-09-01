@@ -21,6 +21,8 @@
 
 import QtQuick 2.0
 import Theme.Components 1.0
+import QtWebKit 3.0
+
 
 Window {
     focus: true
@@ -28,9 +30,18 @@ Window {
     color: "black"
 
     Text {
+        id: title
         color: "white"
         text: "Browser - fullscreen"
         font.pixelSize: parent.width / 10
+    }
+
+    WebView {
+        anchors.top: title.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        url: "http://github.com/stanionascu/qsmart-tv"
     }
 
     Keys.onEscapePressed: {
