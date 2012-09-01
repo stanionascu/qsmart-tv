@@ -84,6 +84,8 @@ public:
             _q_updateItem();
             emit q->loaded();
             emit q->statusChanged();
+        } else if (component->status() == QQmlComponent::Error) {
+            displayComponentErrorString();
         }
     }
 
@@ -91,6 +93,8 @@ public:
     {
         if (status == QQmlComponent::Ready)
             _q_createItem();
+        else if (status == QQmlComponent::Error)
+            displayComponentErrorString();
     }
 
     void _q_updateItem()
@@ -98,6 +102,11 @@ public:
         Q_Q(ApplicationLoader);
         if (item)
             item->setSize(QSizeF(q->width(), q->height()));
+    }
+
+    void displayComponentErrorString()
+    {
+        qCritical() << "ApplicationLoader:" << component->errorString();
     }
 
 private:
