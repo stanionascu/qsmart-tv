@@ -116,13 +116,8 @@ public:
     void _q_updatePPI()
     {
         if (view) {
-            qreal widthMM = QApplication::desktop()->widthMM();
-            qreal heightMM = QApplication::desktop()->heightMM();
-            qreal width = QApplication::desktop()->width();
-            qreal height = QApplication::desktop()->height();
-
-            qreal PPMX = width / widthMM * ((qreal)view->width() / width);
-            qreal PPMY = height / heightMM * ((qreal)view->height() / height);
+            qreal PPMX = (qreal)view->width() / (qreal)view->minimumSize().width();
+            qreal PPMY = (qreal)view->height() / (qreal)view->minimumSize().height();
 
             view->rootContext()->setContextProperty("PPMX", PPMX);
             view->rootContext()->setContextProperty("PPMY", PPMY);
