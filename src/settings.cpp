@@ -33,10 +33,10 @@ namespace SmartTV {
 class SettingsPrivate
 {
 public:
-    SettingsPrivate()
+    SettingsPrivate() :
+        q_ptr(nullptr)
     {
         prepareStandardLocations();
-        load();
     }
     ~SettingsPrivate()
     {
@@ -143,6 +143,7 @@ Settings::Settings(QObject *parent) :
     QObject(parent), d_ptr(new SettingsPrivate)
 {
     d_ptr->q_ptr = this;
+    d_ptr->load();
 }
 
 Settings::~Settings()
