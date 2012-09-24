@@ -33,6 +33,11 @@ public:
     FolderListModelPrivate() :
         q_ptr(nullptr)
     {
+        roles[FolderListModel::NameRole] = "name";
+        roles[FolderListModel::PathRole] = "path";
+        roles[FolderListModel::IsDirRole] = "isDir";
+        roles[FolderListModel::IsFileRole] = "isFile";
+
         absolutePath = QStandardPaths::writableLocation(QStandardPaths::MoviesLocation);
         showDotDot = true;
     }
@@ -63,18 +68,13 @@ private:
     QString absolutePath;
     bool showDotDot;
     QStringList filter;
+    QHash<int, QByteArray> roles;
 };
 
 FolderListModel::FolderListModel(QObject *parent) :
     QAbstractListModel(parent), d_ptr(new FolderListModelPrivate)
 {
     d_ptr->q_ptr = this;
-    QHash<int, QByteArray> roles;
-    roles[NameRole] = "name";
-    roles[PathRole] = "path";
-    roles[IsDirRole] = "isDir";
-    roles[IsFileRole] = "isFile";
-    setRoleNames(roles);
 
     connect(this, SIGNAL(pathChanged()), this, SLOT(_q_buildList()));
     connect(this, SIGNAL(showDotDotChanged()), this, SLOT(_q_buildList()));
@@ -156,6 +156,12 @@ QVariant FolderListModel::data(const QModelIndex &index, int role) const
             return d->files[index.row()].isFile();
     }
     return QVariant();
+}
+
+QHash<int, QByteArray> FolderListModel::roleNames() const
+{
+    Q_D(const FolderListModel);
+    return d->roles;
 }
 
 }

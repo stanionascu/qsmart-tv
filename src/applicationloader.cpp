@@ -160,6 +160,7 @@ QQmlComponent *ApplicationLoader::sourceComponent()
 void ApplicationLoader::setSourceComponent(QQmlComponent *component)
 {
     Q_D(ApplicationLoader);
+    qDebug() << Q_FUNC_INFO << component;
     if (d->component != component) {
         d->setComponent(component);
         d->_q_createItem();

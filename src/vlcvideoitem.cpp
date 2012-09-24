@@ -25,6 +25,7 @@
 #include <QPainter>
 #include <QTimer>
 #include <QDebug>
+#include <QString>
 
 #include <vlc/vlc.h>
 
@@ -113,9 +114,9 @@ public:
         qDebug() << Q_FUNC_INFO << sourceUrl;
 
         if (sourceUrl.isLocalFile())
-            vlcMedia = libvlc_media_new_path(vlcInstance, sourceUrl.toString().toAscii());
+            vlcMedia = libvlc_media_new_path(vlcInstance, sourceUrl.toString().toLatin1());
         else
-            vlcMedia = libvlc_media_new_location(vlcInstance, sourceUrl.toString().toAscii());
+            vlcMedia = libvlc_media_new_location(vlcInstance, sourceUrl.toString().toLatin1());
 
         libvlc_media_player_set_media(vlcPlayer, vlcMedia);
 

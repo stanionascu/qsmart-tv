@@ -53,6 +53,7 @@ public:
     void sortAndFilter(const QStringList &categories);
 
     inline int count() { return rowCount(QModelIndex()); }
+    virtual QHash<int, QByteArray> roleNames() const;
 
 signals:
     void rowCountChanged();

@@ -22,7 +22,7 @@
 #ifndef APPLICATIONMODEL_H
 #define APPLICATIONMODEL_H
 
-#include <QAbstractItemModel>
+#include <QAbstractListModel>
 
 namespace SmartTV {
 
@@ -57,6 +57,7 @@ public:
     int count() { return rowCount(QModelIndex()); }
     Application *findById(const QString &id);
     bool contains(const QString &id);
+    virtual QHash<int, QByteArray> roleNames() const;
 
 signals:
     void rowCountChanged();

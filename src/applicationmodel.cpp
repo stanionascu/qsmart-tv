@@ -24,6 +24,7 @@
 #include <QModelIndex>
 #include <QQmlComponent>
 #include <QQmlContext>
+#include <QStringList>
 
 #include "application.h"
 
@@ -35,7 +36,14 @@ public:
     ApplicationModelPrivate() :
         q_ptr(nullptr)
     {
-
+        roles[ApplicationModel::IdRole] = "identifier";
+        roles[ApplicationModel::CategoryRole] = "category";
+        roles[ApplicationModel::NameRole] = "name";
+        roles[ApplicationModel::VersionRole] = "version";
+        roles[ApplicationModel::IconRole] = "icon";
+        roles[ApplicationModel::WidgetComponentRole] = "widgetComponent";
+        roles[ApplicationModel::ContentComponentRole] = "contentComponent";
+        roles[ApplicationModel::ContextRole] = "context";
     }
 
     ~ApplicationModelPrivate()
@@ -48,22 +56,13 @@ private:
 
     QStringList applicationIds;
     QList<Application*> applicationList;
+    QHash<int, QByteArray> roles;
 };
 
 ApplicationModel::ApplicationModel(QObject *parent) :
     QAbstractListModel(parent), d_ptr(new ApplicationModelPrivate)
 {
     d_ptr->q_ptr = this;
-    QHash<int, QByteArray> roles;
-    roles[IdRole] = "identifier";
-    roles[CategoryRole] = "category";
-    roles[NameRole] = "name";
-    roles[VersionRole] = "version";
-    roles[IconRole] = "icon";
-    roles[WidgetComponentRole] = "widgetComponent";
-    roles[ContentComponentRole] = "contentComponent";
-    roles[ContextRole] = "context";
-    setRoleNames(roles);
 
     connect(this, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SIGNAL(rowCountChanged()));
     connect(this, SIGNAL(rowsRemoved(QModelIndex,int,int)), this, SIGNAL(rowCountChanged()));
@@ -128,6 +127,12 @@ bool ApplicationModel::contains(const QString &id)
 {
     Q_D(ApplicationModel);
     return d->applicationIds.contains(id);
+}
+
+QHash<int, QByteArray> ApplicationModel::roleNames() const
+{
+    Q_D(const ApplicationModel);
+    return d->roles;
 }
 
 }

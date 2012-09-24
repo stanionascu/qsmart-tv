@@ -34,6 +34,8 @@ public:
     ApplicationCategoryModelPrivate() :
         q_ptr(nullptr)
     {
+        roles[ApplicationCategoryModel::NameRole] = "name";
+        roles[ApplicationCategoryModel::ApplicationsRole] = "applications";
     }
 
     ~ApplicationCategoryModelPrivate()
@@ -46,17 +48,13 @@ private:
 
     QStringList categories;
     QList<ApplicationModel*> applications;
+    QHash<int, QByteArray> roles;
 };
 
 ApplicationCategoryModel::ApplicationCategoryModel(QObject *parent) :
     QAbstractListModel(parent), d_ptr(new ApplicationCategoryModelPrivate)
 {
     d_ptr->q_ptr = this;
-
-    QHash<int, QByteArray> roles;
-    roles[NameRole] = "name";
-    roles[ApplicationsRole] = "applications";
-    setRoleNames(roles);
 
     connect(this, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SIGNAL(rowCountChanged()));
     connect(this, SIGNAL(rowsRemoved(QModelIndex,int,int)), this, SIGNAL(rowCountChanged()));
@@ -135,6 +133,12 @@ void ApplicationCategoryModel::sortAndFilter(const QStringList &categories)
     }
 
     endResetModel();
+}
+
+QHash<int, QByteArray> ApplicationCategoryModel::roleNames() const
+{
+    Q_D(const ApplicationCategoryModel);
+    return d->roles;
 }
 
 }
