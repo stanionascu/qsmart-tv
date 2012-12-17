@@ -39,7 +39,6 @@
 #include "applicationsettings.h"
 #include "folderlistmodel.h"
 #include "settings.h"
-#include "vlcvideoitem.h"
 
 namespace SmartTV {
 
@@ -179,7 +178,6 @@ void ApplicationManager::registerTypes()
     qmlRegisterType<SmartTV::ApplicationSettings>("SmartTV", 1, 0, "Settings");
     qmlRegisterType<SmartTV::ApplicationLoader>("SmartTV", 1, 0, "ApplicationLoader");
     qmlRegisterType<SmartTV::FolderListModel>("SmartTV", 1, 0, "FolderListModel");
-    qmlRegisterType<SmartTV::VLCVideoItem>("SmartTV", 1, 0, "VLCVideo");
 
     qmlRegisterUncreatableType<SmartTV::ApplicationModel>("SmartTV", 1, 0, "ApplicationModel", "Not allowed to create ApplicationModel instances.");
     qmlRegisterUncreatableType<SmartTV::ApplicationCategoryModel>("SmartTV", 1, 0, "ApplicationCategoryModel", "Not allowed to create ApplicationCategoryModel instances.");
