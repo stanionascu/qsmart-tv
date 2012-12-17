@@ -25,8 +25,9 @@ import SmartTV 1.0
 Theme {
     id: root
 
-    property int tileWidth: root.width * 0.4
-    property int tileHeight: root.height * 0.4
+    property int tileWidth: 300 * PPMX
+    property int tileHeight: 200 * PPMY
+    property bool completed: true
 
     displayCategories: ["Live TV", "Movies", "TV Shows", "Music", "Pictures", "Utilities", "Settings"]
 
@@ -36,88 +37,83 @@ Theme {
         Qt.quit()
     }
 
-    Image { anchors.fill: parent; source: "images/videos.jpg"; fillMode: Image.PreserveAspectCrop }
+    Image { anchors.fill: parent; source: "images/backgrounds/SKINDEFAULT.jpg"; fillMode: Image.PreserveAspectCrop }
 
-    ListView {
+    Text {
+        id: timeText;
+        anchors.right: parent.right; anchors.top: parent.top
+        text: "16:49"
+        color: "white"
+        font.pixelSize: 16 * PPMX
+    }
+
+    Repeater {
         id: categoriesList
-        currentIndex: 0
-        contentX: -(root.width - tileWidth) / 2 + currentIndex * tileWidth; y: (root.height - tileHeight) / 2
-        width: root.width; height: root.height
+
+        property int currentIndex: 0
+
         model: categories
-        orientation: ListView.Horizontal
-        interactive: false
-
-        delegate: FocusScope {
-            id: categoryPanel
-
-            property int categoryIndex: model.index
+        width: root.width; height: root.height
+        Item {
+            id: applicationsScope
             property int currentIndex: 0
-            property bool active: categoryIndex === categoriesList.currentIndex
+            property int index: model.index
+            property alias count: applicationsList.count
 
-            y: -currentIndex * tileHeight
-            z: active ? 1 : 0
-            width: tileWidth; height: root.height
-            opacity: categoriesList.currentIndex === categoryIndex ? 1.0 : 0.4
-            focus: active
-
+            x: model.index * tileWidth + (root.width - tileWidth) / 2 - tileWidth * categoriesList.currentIndex
+            y: (root.height - tileHeight) / 2 - currentIndex * tileHeight
+            width: tileWidth
             Repeater {
                 id: applicationsList
-
-                clip: false
-                width: tileWidth
                 model: applications
-                focus: categoryPanel.active
-
-                delegate: Tile {
-                    id: tile
-
-                    property bool active: categoryPanel.currentIndex === model.index && categoryPanel.active
-
-                    y: index * tileHeight
+                Tile {
+                    selected: applicationsScope.index === categoriesList.currentIndex && applicationsScope.currentIndex === model.index
+                    x: 0; y: model.index * tileHeight
+                    width: tileWidth; height: tileHeight
                     screen: root
-                    opacity: active ? 1.0 : 0.7
-                    scale: active ? 1.0 : 0.9
-                    width: tileWidth
-                    height: tileHeight
-                    color: "blue"
-                    z: active ? 1 : 0
-                    state: "MINI"
-
                     appId: model.identifier
                     text: model.name
-                    iconSource: model.icon.length > 0 ? model.icon : ""
                     widget: model.widgetComponent
                     content: model.contentComponent
-
-                    Behavior on scale { NumberAnimation { duration: 400 } }
-                    Behavior on opacity { NumberAnimation { duration: 400 } }
-                    Behavior on angle { NumberAnimation { duration: 400 } }
+                    iconSource: model.icon.length > 0 ? model.icon : ""
                 }
             }
 
-            Keys.onDownPressed: {
-                if (categoryPanel.currentIndex < applications.count - 1)
-                    categoryPanel.currentIndex ++
+            function itemAt(index) {
+                return applicationsList.itemAt(index)
             }
 
-            Keys.onUpPressed: {
-                if (categoryPanel.currentIndex > 0)
-                    categoryPanel.currentIndex --
-            }
-
-            Keys.onReturnPressed: {
-                var item = applicationsList.itemAt(categoryPanel.currentIndex)
-                if (item)
-                    item.state = "FULL"
-            }
-
-            Behavior on y { NumberAnimation { duration: 400 } }
-            Behavior on opacity { NumberAnimation { duration: 400 } }
+            Behavior on x { SpringAnimation { spring: 2; damping: 0.2; duration: 300 } }
+            Behavior on y { SpringAnimation { spring: 2; damping: 0.2; duration: 300 } }
         }
+    }
 
-        Keys.onRightPressed: incrementCurrentIndex()
-        Keys.onLeftPressed: decrementCurrentIndex()
+    Keys.onRightPressed: {
+        if (categoriesList.currentIndex < categories.count - 1)
+            categoriesList.currentIndex ++
+    }
 
-        Behavior on contentX { NumberAnimation { duration: 400 } }
+    Keys.onLeftPressed: {
+        if (categoriesList.currentIndex > 0)
+            categoriesList.currentIndex --
+    }
+
+    Keys.onDownPressed: {
+        var applicationsList = categoriesList.itemAt(categoriesList.currentIndex)
+        if (applicationsList.currentIndex < applicationsList.count - 1)
+            applicationsList.currentIndex ++
+    }
+
+    Keys.onUpPressed: {
+        var applicationsList = categoriesList.itemAt(categoriesList.currentIndex)
+        if (applicationsList.currentIndex > 0)
+            applicationsList.currentIndex --
+    }
+
+    Keys.onReturnPressed: {
+        var applicationsList = categoriesList.itemAt(categoriesList.currentIndex)
+        var item = applicationsList.itemAt(applicationsList.currentIndex)
+        if (item)
+            item.fullscreen = true
     }
 }

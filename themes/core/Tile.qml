@@ -34,11 +34,13 @@ Rectangle {
     property Component content
     property alias text: text.text
     property alias iconSource: icon.source
-    property int angle: 0
+
+    property bool fullscreen: false
+    property bool selected: false
 
     smooth: true
     clip: false
-    state: "MINI"
+    color: "blue"
 
     Item {
         id: miniContent
@@ -76,19 +78,14 @@ Rectangle {
         applicationId: appId
         anchors.fill: root
         opacity: 0.0
-        transform: Rotation {
-            angle: 180
-            origin: Qt.vector3d(root.width / 2, root.height / 2, 0)
-            axis: Qt.vector3d(0, 1, 0)
-        }
+
         Behavior on opacity { NumberAnimation { duration: 400 } }
 
         Connections {
             target: contentLoader.item
             ignoreUnknownSignals: true
             onQuit: {
-                console.log("Content - Quit!")
-                root.state = "MINI"
+                root.fullscreen = false
             }
         }
     }
@@ -106,15 +103,9 @@ Rectangle {
         to: 0
     }
 
-    transform: Rotation {
-        angle: root.angle
-        origin: Qt.vector3d(width / 2, height / 2, 0)
-        axis: Qt.vector3d(0, 1, 0)
-    }
-
     states: [
         State {
-            name: "MINI"
+            name: "MINI"; when: !selected && !fullscreen
             PropertyChanges {
                 target: miniContent
                 opacity: 1.0
@@ -124,14 +115,37 @@ Rectangle {
                 sourceComponent: widget
                 opacity: 1.0
             }
-        },
-        State {
-            name: "FULL"
             PropertyChanges {
                 target: root
-                angle: 180
-                explicit: true
+                opacity: 0.7
             }
+            PropertyChanges {
+                target: root
+                scale: 0.9
+            }
+            PropertyChanges {
+                target: root
+                z: 0
+            }
+        },
+        State {
+            name: "SELECTED"
+            extend: "MINI"; when: selected && !fullscreen
+            PropertyChanges {
+                target: root
+                opacity: 1.0
+            }
+            PropertyChanges {
+                target: root
+                scale: 1.0
+            }
+            PropertyChanges {
+                target: root
+                z: 1
+            }
+        },
+        State {
+            name: "FULL"; when: fullscreen
             PropertyChanges {
                 target: miniContent
                 opacity: 0.0
@@ -152,26 +166,26 @@ Rectangle {
 
     transitions: [
         Transition {
-            from: "MINI"
+            from: "SELECTED"
             to: "FULL"
             ParentAnimation {
                 ParallelAnimation {
-                    NumberAnimation { target: root; properties: "x"; duration: 400 }
-                    NumberAnimation { target: root; properties: "y"; duration: 400 }
-                    NumberAnimation { target: root; properties: "width"; duration: 400 }
-                    NumberAnimation { target: root; properties: "height"; duration: 400 }
+                    NumberAnimation { target: root; properties: "x"; duration: 200 }
+                    NumberAnimation { target: root; properties: "y"; duration: 200 }
+                    NumberAnimation { target: root; properties: "width"; duration: 200 }
+                    NumberAnimation { target: root; properties: "height"; duration: 200 }
                 }
             }
         },
         Transition {
             from: "FULL"
-            to: "MINI"
+            to: "SELECTED"
             ParentAnimation {
                 ParallelAnimation {
-                    NumberAnimation { target: root; properties: "x"; duration: 400 }
-                    NumberAnimation { target: root; properties: "y"; duration: 400 }
-                    NumberAnimation { target: root; properties: "width"; duration: 400 }
-                    NumberAnimation { target: root; properties: "height"; duration: 400 }
+                    NumberAnimation { target: root; properties: "x"; duration: 200 }
+                    NumberAnimation { target: root; properties: "y"; duration: 200 }
+                    NumberAnimation { target: root; properties: "width"; duration: 200 }
+                    NumberAnimation { target: root; properties: "height"; duration: 200 }
                 }
             }
         }
