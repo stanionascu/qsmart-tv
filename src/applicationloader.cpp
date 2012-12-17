@@ -79,7 +79,7 @@ public:
                             ApplicationManager::instance()->findById(appId)->context()));
             item->setParent(q);
             item->setParentItem(q);
-            item->setPos(QPointF(0, 0));
+            item->setX(0); item->setY(0);
             item->forceActiveFocus();
             _q_updateItem();
             emit q->loaded();

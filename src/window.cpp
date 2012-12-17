@@ -71,7 +71,7 @@ public:
 
         view->setSource(ThemeManager::instance()->themeUrl());
 
-        view->setWindowTitle("QSmartTV");
+        view->setTitle("QSmartTV");
 
         q->connect(view->engine(), SIGNAL(quit()), QApplication::instance(), SLOT(quit()));
         q->connect(view, SIGNAL(widthChanged(int)), q, SIGNAL(widthChanged()));
