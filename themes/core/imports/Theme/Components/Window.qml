@@ -35,5 +35,6 @@ FocusScope {
     Rectangle {
         id: background
         anchors.fill: parent
+        color: "transparent"
     }
 }
