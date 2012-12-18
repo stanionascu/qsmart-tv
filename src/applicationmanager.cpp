@@ -76,11 +76,25 @@ public:
         QDir appsDir(Settings::instance()->appsDir());
         QHash<QString, ApplicationModel*> appHashModel;
         foreach(const QString &entry, appsDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name)) {
-            if (checkAppOrder(entry)) {
-                Application *app = new Application(entry, q);
-                if (!appHashModel.contains(app->category()))
-                    appHashModel.insert(app->category(), new ApplicationModel(&categories));
-                appHashModel[app->category()]->append(app);
+            if (isAppNameValid(entry)) {
+                QVariantMap appInfo = loadAppInfo(entry);
+                if (appInfo.isEmpty())
+                    continue;
+
+                int linksCount = appInfo["Links"].toList().count();
+                QList<Application*> apps;
+                if (linksCount == 0)
+                    apps.append(new Application(entry, -1, q));
+                else {
+                    for (int i = 0; i < linksCount; ++i)
+                        apps.append(new Application(entry, i, q));
+                }
+
+                foreach (Application *app, apps) {
+                    if (!appHashModel.contains(app->category()))
+                        appHashModel.insert(app->category(), new ApplicationModel(&categories));
+                    appHashModel[app->category()]->append(app);
+                }
 
                 QString appDataDir = Settings::instance()->appsDataDir() + QDir::separator() + entry;
                 QString appCacheDir = appDataDir + QDir::separator() + "cache";
@@ -100,25 +114,30 @@ public:
         createDataFolders();
     }
 
-    bool checkAppOrder(const QString &app)
+    bool isAppNameValid(const QString &app)
     {
         if (app == "imports")
             return false;
 
+        return true;
+    }
+
+    QVariantMap loadAppInfo(const QString &app)
+    {
         QString appFolder = Settings::instance()->appsDir() + QDir::separator() + app;
         QString appInfoFilePath = appFolder + QDir::separator() + "appinfo.json";
         QFile appInfoFile(appInfoFilePath);
         if (!appInfoFile.open(QFile::ReadOnly))
-            return false;
+            return QVariantMap();
 
-        QJsonObject appInfo = QJsonDocument::fromJson(appInfoFile.readAll()).object();
+        QVariantMap appInfo = QJsonDocument::fromJson(appInfoFile.readAll()).object().toVariantMap();
         QStringList requiredAppInfoKeys;
         requiredAppInfoKeys << "Name" << "Version" << "Category" << "Icon";
         foreach (const QString &key, requiredAppInfoKeys)
-            if (!appInfo.keys().contains(key, Qt::CaseInsensitive))
-                return false;
+            if (!appInfo.contains(key))
+                return QVariantMap();
 
-        return true;
+        return appInfo;
     }
 
     void createDataFolders()

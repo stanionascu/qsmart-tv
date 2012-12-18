@@ -14,6 +14,7 @@ OTHER_FILES = main.qml \
     imports/Theme/Components/Label.qml \
     ApplicationsPanel.qml \
     imports/Theme/Components/ShadowRectangle.qml \
+    imports/Theme/Components/Preview.qml \
 
 QML_IMPORT_PATH = imports
 

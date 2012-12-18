@@ -41,6 +41,8 @@ Item {
         id: shadowRectangle
         anchors.fill: parent
         color: "green"
+        border.width: 2
+        border.color: "white"
     }
 
     Item {
@@ -82,6 +84,10 @@ Item {
                 target: shadowRectangle
                 shadowOpacity: 1.0
             }
+            PropertyChanges {
+                target: shadowRectangle
+                border.width: 2
+            }
         },
         State {
             name: "DISABLED"; when: !selected
@@ -92,6 +98,10 @@ Item {
             PropertyChanges {
                 target: shadowRectangle
                 shadowOpacity: 0.0
+            }
+            PropertyChanges {
+                target: shadowRectangle
+                border.width: 0
             }
         }
     ]

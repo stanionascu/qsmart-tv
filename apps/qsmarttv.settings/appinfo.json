@@ -5,7 +5,18 @@
     "Url": "",
     "Requires": [],
     "Features": [],
+    "Links": [
+        {
+            "Name": "System",
+            "Icon": "settings.png",
+            "Content": "System.qml"
+        },
+        {
+            "Name": "Preferences",
+            "Icon": "settings.png",
+            "Content": "Preferences.qml"
+        }
+    ],
     "Version": "1.0",
     "Icon": "settings.png"
 }
-

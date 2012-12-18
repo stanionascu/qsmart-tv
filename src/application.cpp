@@ -71,7 +71,7 @@ public:
             return;
 
         contentComponent = new QQmlComponent(ThemeManager::instance()->view()->engine(),
-                                             appFolder + QDir::separator() + "main.qml", QQmlComponent::Asynchronous);
+                                             appFolder + QDir::separator() + contentFileName, QQmlComponent::Asynchronous);
     }
 
     void load(const QString &identifier)
@@ -84,8 +84,22 @@ public:
             appInfoMap = QJsonDocument::fromJson(appInfoFile.readAll()).object().toVariantMap();
             category = appInfoMap["Category"].toString();
             widgetFileName = appInfoMap["Widget"].toString();
+
+            if (appLinkId >= 0) {
+                Q_ASSERT(appInfoMap.contains("Links"));
+                QVariantList links = appInfoMap["Links"].toList();
+                Q_ASSERT(links.count() > appLinkId);
+                appInfoMap = links.at(appLinkId).toMap();
+            }
+
             if (!appInfoMap["Icon"].toString().isEmpty())
                 appIconPath = appFolder + QDir::separator() + appInfoMap["Icon"].toString();
+
+            if (appInfoMap.contains("Links"))
+                links = appInfoMap["Links"].toList();
+
+            name = appInfoMap["Name"].toString();
+            contentFileName = appLinkId >= 0 ? appInfoMap["Content"].toString() : "main.qml";
         } else
             qFatal(("Could not load Application Info for:" + identifier).toLatin1());
 
@@ -102,17 +116,22 @@ private:
     QQmlComponent *contentComponent;
 
     QString appId;
+    int appLinkId;
     QString appIconPath;
+    QString name;
     QString category;
     QString widgetFileName;
+    QString contentFileName;
     QString appFolder;
     QVariantMap appInfoMap;
+    QVariantList links;
 };
 
-Application::Application(const QString &identifier, QObject *parent) :
+Application::Application(const QString &identifier, int linkId, QObject *parent) :
     QObject(parent), d_ptr(new ApplicationPrivate)
 {
     d_ptr->q_ptr = this;
+    d_ptr->appLinkId = linkId;
     d_ptr->prepareContext();
     d_ptr->load(identifier);
 }
@@ -132,6 +151,18 @@ const QString &Application::category()
 {
     Q_D(Application);
     return d->category;
+}
+
+const QString &Application::name() const
+{
+    Q_D(const Application);
+    return d->name;
+}
+
+const QVariantList &Application::links() const
+{
+    Q_D(const Application);
+    return d->links;
 }
 
 const QVariantMap &Application::toVariantMap()

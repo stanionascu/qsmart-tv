@@ -20,6 +20,7 @@
 ******************************************************************************/
 
 import QtQuick 2.0
+import Theme.Components 1.0
 
 FocusScope {
     id: root
@@ -30,22 +31,6 @@ FocusScope {
 
     signal launched(string identifier, Component contentComponent)
 
-    Rectangle {
-        anchors.fill: parent
-        color: "blue"
-    }
-
-    Rectangle {
-        anchors {
-            left: applicationsGrid.right
-            right: parent.right
-            top: parent.top
-            bottom: parent.bottom
-            leftMargin: 6
-        }
-        color: "white"
-    }
-
     Grid {
         id: applicationsGrid
         anchors {
@@ -55,7 +40,7 @@ FocusScope {
             bottom: parent.bottom
         }
         columns: 2
-        spacing: 6
+        spacing: 3
         Repeater {
             id: applicationsList
             Tile {
@@ -68,12 +53,6 @@ FocusScope {
                 selected: root.selected && currentIndex === model.index
             }
         }
-    }
-
-    Rectangle {
-        id: disabledOverlayRectangle
-        anchors.fill: parent
-        color: "gray"
     }
 
     onFocusChanged: {
@@ -145,15 +124,15 @@ FocusScope {
         State {
             name: "SELECTED"; when: selected
             PropertyChanges {
-                target: disabledOverlayRectangle
-                opacity: 0.0
+                target: root
+                opacity: 1.0
             }
         },
         State {
             name: "DISABLED"; when: !selected
             PropertyChanges {
-                target: disabledOverlayRectangle
-                opacity: 0.9
+                target: root
+                opacity: 0.3
             }
         }
     ]
@@ -163,14 +142,14 @@ FocusScope {
             from: "SELECTED"
             to: "DISABLED"
             ParallelAnimation {
-                NumberAnimation { target: disabledOverlayRectangle; properties: "opacity"; duration: 200 }
+                NumberAnimation { target: root; properties: "opacity"; duration: 200 }
             }
         },
         Transition {
             from: "DISABLED"
             to: "SELECTED"
             ParallelAnimation {
-                NumberAnimation { target: disabledOverlayRectangle; properties: "opacity"; duration: 200 }
+                NumberAnimation { target: root; properties: "opacity"; duration: 200 }
             }
         }
     ]

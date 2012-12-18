@@ -100,7 +100,7 @@ QVariant ApplicationModel::data(const QModelIndex &index, int role) const
         else if (role == CategoryRole)
             return d->applicationList[index.row()]->category();
         else if (role == NameRole)
-            return d->applicationList[index.row()]->toVariantMap()["Name"];
+            return d->applicationList[index.row()]->name();
         else if (role == VersionRole)
             return d->applicationList[index.row()]->toVariantMap()["Version"];
         else if (role == IconRole)

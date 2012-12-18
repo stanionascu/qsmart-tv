@@ -25,6 +25,7 @@ Item {
 
     property alias shadowOpacity: shadowImage.opacity
     property alias color: colorRectangle.color
+    property alias border: colorRectangle.border
 
     BorderImage {
         id: shadowImage

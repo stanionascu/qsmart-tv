@@ -35,12 +35,14 @@ class Application : public QObject
 {
     Q_OBJECT
 public:
-    explicit Application(const QString &identifier, QObject *parent = 0);
+    explicit Application(const QString &identifier, int linkId = -1, QObject *parent = 0);
     virtual ~Application();
 
     const QString &id();
     const QString &icon();
     const QString &category();
+    const QString &name() const;
+    const QVariantList &links() const;
 
     QQmlComponent *contentComponent();
     QQmlComponent *widgetComponent();
