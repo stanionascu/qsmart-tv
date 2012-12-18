@@ -52,7 +52,7 @@ Item {
 
         Label {
             id: titleText
-            font.pixelSize: 18 * PPMY
+            font.pixelSize: 14 * PPMY
             style: Text.Sunken
             anchors {
                 bottom: parent.bottom
