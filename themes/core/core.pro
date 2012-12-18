@@ -10,7 +10,9 @@ OTHER_FILES = main.qml \
     imports/Theme/Components/ProgressIndicator.qml \
     imports/Theme/Components/WindowStack.qml \
     imports/Theme/Components/WindowStack.js \
-    imports/Theme/Components/SmartApplication.qml
+    imports/Theme/Components/SmartApplication.qml \
+    imports/Theme/Components/Label.qml \
+    ApplicationsPanel.qml \
 
 QML_IMPORT_PATH = imports
 

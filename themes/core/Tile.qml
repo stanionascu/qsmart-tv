@@ -27,166 +27,57 @@ Rectangle {
     id: root
 
     property string appId
+    property Component contentComponent
 
-    property Item screen: null
-
-    property Component widget
-    property Component content
-    property alias text: text.text
+    property alias text: titleText.text
     property alias iconSource: icon.source
 
     property bool fullscreen: false
     property bool selected: false
 
-    smooth: true
-    clip: false
-    color: "blue"
+    color: "green"
 
     Item {
         id: miniContent
         anchors.fill: root
-        opacity: 0.0
-        ApplicationLoader {
-            id: widgetLoader
-            anchors.fill: parent
-            applicationId: identifier
-            //asynchronous: true
-        }
+        anchors.margins: 6
 
-        Text {
-            id: text
-            text: qsTr("Tile")
-            color: "white"
-            font.pixelSize: 20 * PPMY
+        Label {
+            id: titleText
+            font.pixelSize: 18 * PPMY
             style: Text.Sunken
-            anchors.fill: parent
+            anchors {
+                bottom: parent.bottom
+                right: parent.right
+                left: parent.left
+            }
         }
 
         Image {
             id: icon
             fillMode: Image.PreserveAspectFit
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.right: parent.right
-            height: parent.height
-        }
-
-        Behavior on opacity { NumberAnimation { duration: 400 } }
-    }
-
-    ApplicationLoader {
-        id: contentLoader
-        applicationId: appId
-        anchors.fill: root
-        opacity: 0.0
-
-        Behavior on opacity { NumberAnimation { duration: 400 } }
-
-        Connections {
-            target: contentLoader.item
-            ignoreUnknownSignals: true
-            onQuit: {
-                root.fullscreen = false
+            anchors {
+                bottom: titleText.top
+                left: parent.left
+                right: parent.right
+                top: parent.top
             }
         }
-    }
-
-    BusyIndicator {
-        visible: widgetLoader.status !== Loader.Ready && contentLoader.status !== Loader.Ready && icon.status !== Image.Ready
-        anchors.centerIn: parent
-    }
-
-    PropertyAnimation {
-        id: widgetFadeOutAnimation
-        target: widgetLoader.item
-        properties: "opacity"
-        from: 1.0
-        to: 0
     }
 
     states: [
         State {
-            name: "MINI"; when: !selected && !fullscreen
-            PropertyChanges {
-                target: miniContent
-                opacity: 1.0
-            }
-            PropertyChanges {
-                target: widgetLoader
-                sourceComponent: widget
-                opacity: 1.0
-            }
+            name: "SELECTED"; when: selected
             PropertyChanges {
                 target: root
-                opacity: 0.7
-            }
-            PropertyChanges {
-                target: root
-                scale: 0.9
-            }
-            PropertyChanges {
-                target: root
-                z: 0
+                scale: 1.3
             }
         },
         State {
-            name: "SELECTED"
-            extend: "MINI"; when: selected && !fullscreen
-            PropertyChanges {
-                target: root
-                opacity: 1.0
-            }
+            name: "DISABLED"; when: !selected
             PropertyChanges {
                 target: root
                 scale: 1.0
-            }
-            PropertyChanges {
-                target: root
-                z: 1
-            }
-        },
-        State {
-            name: "FULL"; when: fullscreen
-            PropertyChanges {
-                target: miniContent
-                opacity: 0.0
-            }
-            PropertyChanges {
-                target: contentLoader
-                sourceComponent: content
-                opacity: 1.0
-            }
-            ParentChange {
-                target: root
-                parent: screen
-                x: 0; y: 0
-                width: screen.width; height: screen.height
-            }
-        }
-    ]
-
-    transitions: [
-        Transition {
-            from: "SELECTED"
-            to: "FULL"
-            ParentAnimation {
-                ParallelAnimation {
-                    NumberAnimation { target: root; properties: "x"; duration: 200 }
-                    NumberAnimation { target: root; properties: "y"; duration: 200 }
-                    NumberAnimation { target: root; properties: "width"; duration: 200 }
-                    NumberAnimation { target: root; properties: "height"; duration: 200 }
-                }
-            }
-        },
-        Transition {
-            from: "FULL"
-            to: "SELECTED"
-            ParentAnimation {
-                ParallelAnimation {
-                    NumberAnimation { target: root; properties: "x"; duration: 200 }
-                    NumberAnimation { target: root; properties: "y"; duration: 200 }
-                    NumberAnimation { target: root; properties: "width"; duration: 200 }
-                    NumberAnimation { target: root; properties: "height"; duration: 200 }
-                }
             }
         }
     ]

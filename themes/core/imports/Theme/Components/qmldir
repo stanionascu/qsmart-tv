@@ -1,4 +1,5 @@
 BusyIndicator 1.0 BusyIndicator.qml
+Label 1.0 Label.qml
 ProgressIndicator 1.0 ProgressIndicator.qml
 SmartApplication 1.0 SmartApplication.qml
 Window 1.0 Window.qml

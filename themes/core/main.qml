@@ -21,99 +21,106 @@
 
 import QtQuick 2.0
 import SmartTV 1.0
+import Theme.Components 1.0
 
 Theme {
     id: root
 
-    property int tileWidth: 300 * PPMX
-    property int tileHeight: 200 * PPMY
-    property bool completed: true
+    property int applicationsPanelWidth: root.width * 0.8
+    property int applicationsPanelHeight: root.height * 0.65
+    property int currentCategoryIndex: 0
 
     displayCategories: ["Live TV", "Movies", "TV Shows", "Music", "Pictures", "Utilities", "Settings"]
 
-    focus: true
-
-    Keys.onEscapePressed: {
-        Qt.quit()
-    }
-
     Image { anchors.fill: parent; source: "images/backgrounds/SKINDEFAULT.jpg"; fillMode: Image.PreserveAspectCrop }
 
-    Text {
-        id: timeText;
-        anchors.right: parent.right; anchors.top: parent.top
-        text: "16:49"
-        color: "white"
-        font.pixelSize: 16 * PPMX
-    }
-
-    Repeater {
-        id: categoriesList
-
-        property int currentIndex: 0
-
-        model: categories
-        width: root.width; height: root.height
-        Item {
-            id: applicationsScope
-            property int currentIndex: 0
-            property int index: model.index
-            property alias count: applicationsList.count
-
-            x: model.index * tileWidth + (root.width - tileWidth) / 2 - tileWidth * categoriesList.currentIndex
-            y: (root.height - tileHeight) / 2 - currentIndex * tileHeight
-            width: tileWidth
+    FocusScope {
+        id: categoriesFocusScope
+        focus: true
+        anchors.fill: parent
+        Row {
+            anchors.horizontalCenter: parent.horizontalCenter
+            y: 70 * PPMY
+            spacing: 30 * PPMX
             Repeater {
-                id: applicationsList
-                model: applications
-                Tile {
-                    selected: applicationsScope.index === categoriesList.currentIndex && applicationsScope.currentIndex === model.index
-                    x: 0; y: model.index * tileHeight
-                    width: tileWidth; height: tileHeight
-                    screen: root
-                    appId: model.identifier
+                model: categories
+                Label {
                     text: model.name
-                    widget: model.widgetComponent
-                    content: model.contentComponent
-                    iconSource: model.icon.length > 0 ? model.icon : ""
+                    horizontalAlignment: Text.Center
+                    opacity: currentCategoryIndex === model.index ? 1.0 : 0.5
+                    font.weight: Font.Bold
                 }
             }
+        }
 
-            function itemAt(index) {
-                return applicationsList.itemAt(index)
-            }
+        Keys.onRightPressed: {
+            if (currentCategoryIndex < categories.count - 1)
+                currentCategoryIndex ++
+        }
 
-            Behavior on x { SpringAnimation { spring: 2; damping: 0.2; duration: 300 } }
-            Behavior on y { SpringAnimation { spring: 2; damping: 0.2; duration: 300 } }
+        Keys.onLeftPressed: {
+            if (currentCategoryIndex > 0)
+                currentCategoryIndex --
+        }
+
+        Keys.onDownPressed: {
+            focusCurrentCategoryPanel()
+        }
+
+        Keys.onEscapePressed: {
+            Qt.quit()
+        }
+
+        function focusCurrentCategoryPanel() {
+            var panel = categoriesPanels.itemAt(currentCategoryIndex)
+            if (panel)
+                panel.focus = true
         }
     }
 
-    Keys.onRightPressed: {
-        if (categoriesList.currentIndex < categories.count - 1)
-            categoriesList.currentIndex ++
+    Row {
+        spacing: 30 * PPMX
+        x: (root.width - applicationsPanelWidth) / 2 - currentCategoryIndex * (applicationsPanelWidth + spacing)
+        y: 110 * PPMY
+        Repeater {
+            id: categoriesPanels
+            model: categories
+            ApplicationsPanel {
+                applicationsModel: applications
+                selected: currentCategoryIndex === model.index
+                width: applicationsPanelWidth
+                height: applicationsPanelHeight
+
+                onFocusChanged: {
+                    if (!focus)
+                        categoriesFocusScope.focus = true
+                }
+
+                onLaunched: {
+                    applicationLoader.applicationId = identifier
+                    applicationLoader.sourceComponent = contentComponent
+                    applicationFocusScope.focus = true
+                }
+            }
+        }
+        Behavior on x { NumberAnimation { duration: 200 } }
     }
 
-    Keys.onLeftPressed: {
-        if (categoriesList.currentIndex > 0)
-            categoriesList.currentIndex --
-    }
-
-    Keys.onDownPressed: {
-        var applicationsList = categoriesList.itemAt(categoriesList.currentIndex)
-        if (applicationsList.currentIndex < applicationsList.count - 1)
-            applicationsList.currentIndex ++
-    }
-
-    Keys.onUpPressed: {
-        var applicationsList = categoriesList.itemAt(categoriesList.currentIndex)
-        if (applicationsList.currentIndex > 0)
-            applicationsList.currentIndex --
-    }
-
-    Keys.onReturnPressed: {
-        var applicationsList = categoriesList.itemAt(categoriesList.currentIndex)
-        var item = applicationsList.itemAt(applicationsList.currentIndex)
-        if (item)
-            item.fullscreen = true
+    FocusScope {
+        id: applicationFocusScope
+        focus: false
+        anchors.fill: parent
+        ApplicationLoader {
+            id: applicationLoader
+            anchors.fill: parent
+        }
+        Connections {
+            target: applicationLoader.item
+            onQuit: {
+                applicationLoader.sourceComponent = null
+                applicationFocusScope.focus = false
+                categoriesFocusScope.focusCurrentCategoryPanel()
+            }
+        }
     }
 }
