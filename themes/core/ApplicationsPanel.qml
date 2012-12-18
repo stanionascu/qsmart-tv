@@ -48,7 +48,12 @@ FocusScope {
 
     Grid {
         id: applicationsGrid
-        anchors.margins: 6
+        anchors {
+            margins: 6
+            top: parent.top
+            left: parent.left
+            bottom: parent.bottom
+        }
         columns: 2
         spacing: 6
         Repeater {
