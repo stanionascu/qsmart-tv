@@ -66,7 +66,7 @@ public:
         registerTypes();
 
         view->setResizeMode(QQuickView::SizeRootObjectToView);
-        view->setMinimumSize(QSize(640, 480));
+        view->setMinimumSize(QSize(640, 360));
         view->setColor(Qt::black);
 
         view->setSource(ThemeManager::instance()->themeUrl());
