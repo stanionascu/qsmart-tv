@@ -32,78 +32,83 @@ Theme {
 
     displayCategories: ["Live TV", "Movies", "TV Shows", "Music", "Pictures", "Utilities", "Settings"]
 
-    Image { anchors.fill: parent; source: "images/backgrounds/SKINDEFAULT.jpg"; fillMode: Image.PreserveAspectCrop }
-
-    FocusScope {
-        id: categoriesFocusScope
-        focus: true
+    Item {
+        id: mainMenu
         anchors.fill: parent
+
+        Image { anchors.fill: parent; source: "images/backgrounds/SKINDEFAULT.jpg"; fillMode: Image.PreserveAspectCrop }
+
+        FocusScope {
+            id: categoriesFocusScope
+            focus: true
+            anchors.fill: parent
+            Row {
+                anchors.horizontalCenter: parent.horizontalCenter
+                y: 70 * PPMY
+                spacing: 30 * PPMX
+                Repeater {
+                    model: categories
+                    Label {
+                        text: model.name
+                        horizontalAlignment: Text.Center
+                        opacity: currentCategoryIndex === model.index ? 1.0 : 0.5
+                        font.weight: Font.Bold
+                    }
+                }
+            }
+
+            Keys.onRightPressed: {
+                if (currentCategoryIndex < categories.count - 1)
+                    currentCategoryIndex ++
+            }
+
+            Keys.onLeftPressed: {
+                if (currentCategoryIndex > 0)
+                    currentCategoryIndex --
+            }
+
+            Keys.onDownPressed: {
+                focusCurrentCategoryPanel()
+            }
+
+            Keys.onEscapePressed: {
+                Qt.quit()
+            }
+
+            function focusCurrentCategoryPanel() {
+                var panel = categoriesPanels.itemAt(currentCategoryIndex)
+                if (panel)
+                    panel.focus = true
+            }
+        }
+
         Row {
-            anchors.horizontalCenter: parent.horizontalCenter
-            y: 70 * PPMY
             spacing: 30 * PPMX
+            x: (root.width - applicationsPanelWidth) / 2 - currentCategoryIndex * (applicationsPanelWidth + spacing)
+            y: 110 * PPMY
             Repeater {
+                id: categoriesPanels
                 model: categories
-                Label {
-                    text: model.name
-                    horizontalAlignment: Text.Center
-                    opacity: currentCategoryIndex === model.index ? 1.0 : 0.5
-                    font.weight: Font.Bold
+                ApplicationsPanel {
+                    applicationsModel: applications
+                    selected: currentCategoryIndex === model.index
+                    width: applicationsPanelWidth
+                    height: applicationsPanelHeight
+
+                    onFocusChanged: {
+                        if (!focus)
+                            categoriesFocusScope.focus = true
+                    }
+
+                    onLaunched: {
+                        applicationLoader.applicationId = identifier
+                        applicationLoader.sourceComponent = contentComponent
+                        applicationFocusScope.focus = true
+                    }
                 }
             }
+            Behavior on x { NumberAnimation { duration: 200 } }
         }
-
-        Keys.onRightPressed: {
-            if (currentCategoryIndex < categories.count - 1)
-                currentCategoryIndex ++
-        }
-
-        Keys.onLeftPressed: {
-            if (currentCategoryIndex > 0)
-                currentCategoryIndex --
-        }
-
-        Keys.onDownPressed: {
-            focusCurrentCategoryPanel()
-        }
-
-        Keys.onEscapePressed: {
-            Qt.quit()
-        }
-
-        function focusCurrentCategoryPanel() {
-            var panel = categoriesPanels.itemAt(currentCategoryIndex)
-            if (panel)
-                panel.focus = true
-        }
-    }
-
-    Row {
-        spacing: 30 * PPMX
-        x: (root.width - applicationsPanelWidth) / 2 - currentCategoryIndex * (applicationsPanelWidth + spacing)
-        y: 110 * PPMY
-        Repeater {
-            id: categoriesPanels
-            model: categories
-            ApplicationsPanel {
-                applicationsModel: applications
-                selected: currentCategoryIndex === model.index
-                width: applicationsPanelWidth
-                height: applicationsPanelHeight
-
-                onFocusChanged: {
-                    if (!focus)
-                        categoriesFocusScope.focus = true
-                }
-
-                onLaunched: {
-                    applicationLoader.applicationId = identifier
-                    applicationLoader.sourceComponent = contentComponent
-                    applicationFocusScope.focus = true
-                }
-            }
-        }
-        Behavior on x { NumberAnimation { duration: 200 } }
     }
 
     FocusScope {
@@ -113,14 +118,72 @@ Theme {
         ApplicationLoader {
             id: applicationLoader
             anchors.fill: parent
+
+            onOpacityChanged: {
+                if (opacity === 0.0 && !applicationFocusScope.focus)
+                    sourceComponent = null
+            }
         }
         Connections {
             target: applicationLoader.item
             onQuit: {
-                applicationLoader.sourceComponent = null
                 applicationFocusScope.focus = false
                 categoriesFocusScope.focusCurrentCategoryPanel()
             }
         }
     }
+
+
+    states: [
+        State {
+            name: "MAINMENU"; when: !applicationFocusScope.focus
+            PropertyChanges {
+                target: mainMenu
+                scale: 1.0
+            }
+            PropertyChanges {
+                target: mainMenu
+                opacity: 1.0
+            }
+            PropertyChanges {
+                target: applicationLoader
+                scale: 1.3
+            }
+            PropertyChanges {
+                target: applicationLoader
+                opacity: 0.0
+            }
+        },
+        State {
+            name: "APPLICATION"; when: applicationFocusScope.focus
+            PropertyChanges {
+                target: mainMenu
+                scale: 0.7
+            }
+            PropertyChanges {
+                target: mainMenu
+                opacity: 0.0
+            }
+            PropertyChanges {
+                target: applicationLoader
+                scale: 1.0
+            }
+            PropertyChanges {
+                target: applicationLoader
+                opacity: 1.0
+            }
+        }
+    ]
+
+    transitions: [
+        Transition {
+            from: "MAINMENU"
+            to: "APPLICATION"
+            reversible: true
+            ParallelAnimation {
+                NumberAnimation { target: mainMenu; properties: "opacity,scale"; duration: 100 }
+                NumberAnimation { target: applicationLoader; properties: "opacity,scale"; duration: 100 }
+            }
+        }
+    ]
 }
