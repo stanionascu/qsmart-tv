@@ -38,6 +38,40 @@ Theme {
 
         Image { anchors.fill: parent; source: "images/backgrounds/SKINDEFAULT.jpg"; fillMode: Image.PreserveAspectCrop }
 
+        Label {
+            id: timeLabel
+            font.pixelSize: 24 * PPMY
+            anchors {
+                right: parent.right
+                bottom: parent.bottom
+                margins: 10
+            }
+        }
+
+        Label {
+            id: dateLabel
+            font.pixelSize: 12 * PPMY
+            anchors {
+                bottom: timeLabel.top
+                right: parent.right
+                rightMargin: 10
+            }
+        }
+
+        Timer {
+            id: timeUpdateTimer
+            interval: 1000
+            repeat: true
+            running: true
+            triggeredOnStart: true
+            onTriggered: {
+                var date = new Date()
+                interval = (60 - date.getSeconds()) * 1000
+                timeLabel.text = Qt.formatTime(date, "HH:mm")
+                dateLabel.text = Qt.formatDate(date, Qt.TextDate)
+            }
+        }
+
         FocusScope {
             id: categoriesFocusScope
             focus: true
