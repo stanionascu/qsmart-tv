@@ -23,7 +23,7 @@ import QtQuick 2.0
 import Theme.Components 1.0
 import SmartTV 1.0
 
-Rectangle {
+Item {
     id: root
 
     property string appId
@@ -35,7 +35,13 @@ Rectangle {
     property bool fullscreen: false
     property bool selected: false
 
-    color: "green"
+    z: selected ? 1 : 0
+
+    ShadowRectangle {
+        id: shadowRectangle
+        anchors.fill: parent
+        color: "green"
+    }
 
     Item {
         id: miniContent
@@ -72,12 +78,39 @@ Rectangle {
                 target: root
                 scale: 1.3
             }
+            PropertyChanges {
+                target: shadowRectangle
+                shadowOpacity: 1.0
+            }
         },
         State {
             name: "DISABLED"; when: !selected
             PropertyChanges {
                 target: root
                 scale: 1.0
+            }
+            PropertyChanges {
+                target: shadowRectangle
+                shadowOpacity: 0.0
+            }
+        }
+    ]
+
+    transitions: [
+        Transition {
+            from: "SELECTED"
+            to: "DISABLED"
+            ParallelAnimation {
+                NumberAnimation { target: shadowRectangle; properties: "shadowOpacity"; duration: 100 }
+                NumberAnimation { target: root; properties: "scale"; duration: 100 }
+            }
+        },
+        Transition {
+            from: "DISABLED"
+            to: "SELECTED"
+            ParallelAnimation {
+                NumberAnimation { target: shadowRectangle; properties: "shadowOpacity"; duration: 100 }
+                NumberAnimation { target: root; properties: "scale"; duration: 100 }
             }
         }
     ]

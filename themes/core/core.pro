@@ -13,6 +13,7 @@ OTHER_FILES = main.qml \
     imports/Theme/Components/SmartApplication.qml \
     imports/Theme/Components/Label.qml \
     ApplicationsPanel.qml \
+    imports/Theme/Components/ShadowRectangle.qml \
 
 QML_IMPORT_PATH = imports
 
