@@ -24,4 +24,8 @@ import Theme.Components 1.0
 
 SmartApplication {
     initialWindow: "system/MainWindow.qml"
+
+    Keys.onEscapePressed: {
+        quit()
+    }
 }
