@@ -32,7 +32,6 @@ Item {
     height: parent ? parent.height : 0
 
     function push(window) {
-        console.log(typeof window)
         if (typeof window === "string") {
             var pathCheckRegex = /^file:|^\//i
             if (!pathCheckRegex.test(window))
