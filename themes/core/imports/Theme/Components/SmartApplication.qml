@@ -33,6 +33,14 @@ FocusScope {
 
     signal quit()
 
+    Connections {
+        target: windowStack
+        onPushFailed: {
+            errorText.text = errorString
+            errorRectangle.visible = true
+        }
+    }
+
     Component.onCompleted: {
         init()
     }
@@ -43,5 +51,19 @@ FocusScope {
 
     function init() {
         windowStack.push(initialWindow)
+    }
+
+    Rectangle {
+        id: errorRectangle
+        color: "white"
+        anchors.fill: parent
+        visible: false
+        Text {
+            id: errorText
+            anchors.fill: parent
+            color: "black"
+            font.pixelSize: 30 * PPMY
+            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+        }
     }
 }
