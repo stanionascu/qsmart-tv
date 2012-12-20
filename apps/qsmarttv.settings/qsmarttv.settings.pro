@@ -1,5 +1,8 @@
 TEMPLATE = aux
 
 OTHER_FILES = appinfo.json \
-    main.qml \
-    MainWindow.qml
+    MainWindow.qml \
+    System.qml \
+    Preferences.qml \
+    system/MainWindow.qml \
+    preferences/MainWindow.qml \
