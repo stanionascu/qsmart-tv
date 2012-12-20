@@ -28,7 +28,7 @@ FocusScope {
     focus: true
     anchors.fill: parent
 
-    property Component initialWindow: null
+    property variant initialWindow: null
     property WindowStack windowStack: WindowStack { parent: root }
 
     signal quit()

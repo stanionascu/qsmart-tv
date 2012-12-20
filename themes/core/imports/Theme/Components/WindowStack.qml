@@ -32,6 +32,15 @@ Item {
     height: parent ? parent.height : 0
 
     function push(window) {
+        console.log(typeof window)
+        if (typeof window === "string") {
+            var pathCheckRegex = /^file:|^\//i
+            if (!pathCheckRegex.test(window))
+                window = context_AppPath + "/" + window
+            window = Qt.createComponent(window)
+            if (window.status === Component.Error)
+                console.log(window.errorString())
+        }
         Stack.push(window)
         depth = Stack.windowStack.length
     }
