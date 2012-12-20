@@ -104,6 +104,7 @@ public:
             qFatal(("Could not load Application Info for:" + identifier).toLatin1());
 
         context->setContextProperty("context_AppId", identifier);
+        context->setContextProperty("context_AppPath", appFolder);
         qDebug() << identifier << appInfoMap;
     }
 

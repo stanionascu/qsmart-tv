@@ -88,6 +88,7 @@ public:
                                       QDir::separator() + "imports");
 
         view->engine()->rootContext()->setContextProperty("context_AppId", "global");
+        view->engine()->rootContext()->setContextProperty("context_AppPath", "");
         _q_updatePPI();
 
         qDebug() << view->engine()->importPathList();
