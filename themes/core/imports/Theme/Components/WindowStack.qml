@@ -28,6 +28,8 @@ Item {
     property int depth: 0
     property Item currentWindow: null
 
+    signal pushFailed(string errorString)
+
     width: parent ? parent.width : 0
     height: parent ? parent.height : 0
 
@@ -37,11 +39,15 @@ Item {
             if (!pathCheckRegex.test(window))
                 window = context_AppPath + "/" + window
             window = Qt.createComponent(window)
-            if (window.status === Component.Error)
-                console.log(window.errorString())
+            if (window.status === Component.Error) {
+                pushFailed(window.errorString())
+                console.log("WindowStack:", window.errorString())
+            }
         }
-        Stack.push(window)
-        depth = Stack.windowStack.length
+        if (window.status === Component.Ready) {
+            Stack.push(window)
+            depth = Stack.windowStack.length
+        }
     }
 
     function pop() {
